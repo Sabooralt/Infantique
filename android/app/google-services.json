@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "982350346256",
+    "project_id": "infantique-8aa87",
+    "storage_bucket": "infantique-8aa87.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:982350346256:android:4f84bc9ef012e1e0553295",
+        "android_client_info": {
+          "package_name": "com.example.infantique"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9o4jkYPRj88AGcXIdscMgUF_0W8i6Uts"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
