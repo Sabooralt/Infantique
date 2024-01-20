@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:infantique/widgets/LoadingOverlay.dart';
 import 'package:infantique/widgets/loadingManager.dart';
+import 'constants.dart';
 
 class loginscreen extends StatefulWidget {
 
@@ -15,7 +16,6 @@ class loginscreen extends StatefulWidget {
 }
 
 class _loginscreenState extends State<loginscreen> {
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -28,21 +28,29 @@ class _loginscreenState extends State<loginscreen> {
   // Set the success message when the login page is initialized
   _errorMessage = widget.successMessage ?? ''; // Provide a default value
   // Set the color based on the success message
-  _messageColor = _errorMessage == 'Account created successfully!' ? Colors.green : Colors.red;
+  _messageColor = _errorMessage == 'Account created successfully! Please Log In.' ? Colors.green : Colors.red;
 }
 
-  bool _isLoading = false;
+bool _isLoading = false;
 
   Future<void> _signIn() async {
+    if (_emailController.text.isEmpty || _passwordController.text.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please fill in all fields';
+        _messageColor = Colors.red;
+      });
+      return;
+    }
     setState(() {
       _isLoading = true;
     });
 
     try {
+
       // Sign in the user with email and password
       LoadingManager().showLoading(context);
       // Simulate asynchronous sign-in process
-      await Future.delayed(Duration(seconds: 3));
+
       await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
@@ -60,6 +68,7 @@ class _loginscreenState extends State<loginscreen> {
       print('Error during sign in: $e');
       setState(() {
         _errorMessage = 'Invalid email or password';
+        _messageColor =  Colors.red;
       });
     } finally {
       setState(() {
@@ -77,9 +86,6 @@ class _loginscreenState extends State<loginscreen> {
   @override
   Widget build(BuildContext context) {
         return Material(
-
-      key: _scaffoldKey,
-
       child: SingleChildScrollView(
         child: SafeArea(
           child: Column(

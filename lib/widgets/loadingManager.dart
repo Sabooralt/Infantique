@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:infantique/widgets/LoadingOverlay.dart';
 
+bool _isLoading = false;
 class LoadingManager {
   static LoadingManager? _instance;
 

@@ -2,6 +2,8 @@ import 'package:infantique/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:infantique/widgets/LoadingOverlay.dart';
+import 'package:infantique/widgets/loadingManager.dart';
 
 class signupscreen extends StatefulWidget {
   const signupscreen({Key? key}) : super(key: key);
@@ -18,6 +20,7 @@ class _signupscreenState extends State<signupscreen> {
       TextEditingController();
 
   String _message = '';
+  bool _isLoading = false;
 
   FirebaseAuth _auth = FirebaseAuth.instance;
   @override
@@ -118,7 +121,17 @@ class _signupscreenState extends State<signupscreen> {
                           print('Passwords do not match');
                           return;
                         }
+                        if (_nameController.text.isEmpty ||
+                            _emailController.text.isEmpty ||
+                            _passwordController.text.isEmpty ||
+                            _confirmPasswordController.text.isEmpty) {
+                          setState(() {
+                            _message = 'Please fill in all fields';
+                          });
+                          return;
+                        }
                         try {
+                          LoadingManager().showLoading(context);
                           UserCredential userCredential = await FirebaseAuth
                               .instance
                               .createUserWithEmailAndPassword(
@@ -173,6 +186,7 @@ class _signupscreenState extends State<signupscreen> {
                                     'An error occurred while signing up. Please try again later.';
                             }
 
+
                             // Set the error message
                             setState(() {
                               _message = errorMessage;
@@ -180,6 +194,15 @@ class _signupscreenState extends State<signupscreen> {
 
                             print('Error during sign up: $e');
                           }
+
+                        }
+                        finally {
+                          setState(() {
+                            _isLoading = false;
+                          });
+
+                          // Hide loading screen using LoadingManager
+                          LoadingManager().hideLoading();
                         }
                       },
                       child: Text(
