@@ -1,18 +1,85 @@
 import 'package:infantique/screens/main_screen.dart';
 import 'package:infantique/screens//signup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:infantique/widgets/LoadingOverlay.dart';
+import 'package:infantique/widgets/loadingManager.dart';
 
 class loginscreen extends StatefulWidget {
-  const loginscreen({super.key});
+
+  final String? successMessage; // Receive success message as a parameter
+  const loginscreen({Key? key, this.successMessage}) : super(key: key);
 
   @override
   State<loginscreen> createState() => _loginscreenState();
 }
 
 class _loginscreenState extends State<loginscreen> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? _errorMessage;
+  Color _messageColor = Colors.red;
+
+  @override
+  void initState() {
+  super.initState();
+  // Set the success message when the login page is initialized
+  _errorMessage = widget.successMessage ?? ''; // Provide a default value
+  // Set the color based on the success message
+  _messageColor = _errorMessage == 'Account created successfully!' ? Colors.green : Colors.red;
+}
+
+  bool _isLoading = false;
+
+  Future<void> _signIn() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Sign in the user with email and password
+      LoadingManager().showLoading(context);
+      // Simulate asynchronous sign-in process
+      await Future.delayed(Duration(seconds: 3));
+      await _auth.signInWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      // If successful, navigate to the main screen or perform other actions
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainScreen(),
+        ),
+      );
+    } catch (e) {
+      // Handle sign-in errors (e.g., wrong password, user not found)
+      print('Error during sign in: $e');
+      setState(() {
+        _errorMessage = 'Invalid email or password';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+
+      // Hide loading screen using LoadingManager
+      LoadingManager().hideLoading();
+    }
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
-    return Material(
+        return Material(
+
+      key: _scaffoldKey,
+
       child: SingleChildScrollView(
         child: SafeArea(
           child: Column(
@@ -27,10 +94,9 @@ class _loginscreenState extends State<loginscreen> {
                 child: Text(
                   "Login",
                   style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.purple
-                  ),
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: Colors.purple),
                 ),
               ),
               SizedBox(height: 30),
@@ -39,8 +105,8 @@ class _loginscreenState extends State<loginscreen> {
                 child: Column(
                   children: [
                     TextFormField(
+                      controller: _emailController,
                       decoration: InputDecoration(
-
                           labelStyle: TextStyle(color: Colors.grey),
                           labelText: "Enter Email",
                           enabledBorder: OutlineInputBorder(
@@ -54,6 +120,7 @@ class _loginscreenState extends State<loginscreen> {
                     ),
                     SizedBox(height: 15),
                     TextFormField(
+                      controller: _passwordController,
                       decoration: InputDecoration(
                           labelStyle: TextStyle(color: Colors.grey),
                           labelText: "Enter Password",
@@ -82,19 +149,14 @@ class _loginscreenState extends State<loginscreen> {
                     ),
                     SizedBox(height: 50),
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MainScreen(),
-                            ));
-                      },
+                      onPressed: _signIn,
                       child: Text(
                         "Log In",
                         style: TextStyle(
-                            fontSize: 18,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size.fromHeight(55),
@@ -104,6 +166,17 @@ class _loginscreenState extends State<loginscreen> {
                         ),
                       ),
                     ),
+                    if (_errorMessage != null)
+                      SizedBox(
+                          height:
+                              10), // Add spacing between the button and the message
+                    Text(
+                      _errorMessage!,
+                      style: TextStyle(
+                           color: _messageColor,
+                            )
+                    ),
+
                     SizedBox(
                       height: 15,
                     ),
@@ -118,11 +191,13 @@ class _loginscreenState extends State<loginscreen> {
                           ),
                         ),
                         TextButton(
-                            onPressed: () {Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => signupscreen(),
-                                ));},
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => signupscreen(),
+                                  ));
+                            },
                             child: Text(
                               "Sign Up",
                               style: TextStyle(

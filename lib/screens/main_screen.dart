@@ -5,6 +5,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:infantique/constants.dart';
 import 'package:infantique/screens/cart_screen.dart';
 import 'package:infantique/screens/home_screen.dart';
+import 'package:infantique/widgets/loadingManager.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
