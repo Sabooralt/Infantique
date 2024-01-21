@@ -5,6 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:infantique/widgets/LoadingOverlay.dart';
 import 'package:infantique/widgets/loadingManager.dart';
 import 'constants.dart';
+import 'package:infantique/admin_panel/product_crud.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+
 
 class loginscreen extends StatefulWidget {
 
@@ -195,6 +198,15 @@ bool _isLoading = false;
                             fontSize: 15,
                             color: Colors.black54,
                           ),
+                        ),
+                        TextButton(onPressed: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AdminPanel(),
+                              ));
+                        }, child: Text("Admin Panel")
+
                         ),
                         TextButton(
                             onPressed: () {

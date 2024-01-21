@@ -1,3 +1,4 @@
+/*
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
@@ -28,7 +29,8 @@ class ProductInfo extends StatelessWidget {
                 Text(
                   "\$${product.price}",
                   style: const TextStyle(
-                    fontSize: 22,
+                    fontSize: 22,*/
+/*
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -98,3 +100,4 @@ class ProductInfo extends StatelessWidget {
     );
   }
 }
+*/

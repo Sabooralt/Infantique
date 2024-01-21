@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:infantique/screens/home_screen.dart';
+import 'package:infantique/screens/login_screen.dart';
 import 'package:infantique/screens/main_screen.dart';
 import 'package:infantique/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:infantique/widgets/LoadingOverlay.dart';
+import 'package:infantique/widgets/loadingManager.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
 void main() async {
@@ -32,6 +36,26 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.mulishTextTheme(),
       ),
       home: const spscreen(),
+    );
+  }
+
+}
+class Authentication extends StatelessWidget {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+
+        stream: _auth.authStateChanges(),
+
+        builder: (context,snapshot){
+          if (snapshot.connectionState == ConnectionState.active) {
+            User? user = snapshot.data as User?;
+
+            return user == null ? loginscreen() : MyApp();
+          }
+          return  spscreen();
+        }
     );
   }
 }

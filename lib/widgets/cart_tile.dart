@@ -4,6 +4,7 @@ import 'package:ionicons/ionicons.dart';
 import 'package:infantique/constants.dart';
 import 'package:infantique/models/cart_item.dart';
 
+
 class CartTile extends StatelessWidget {
   final CartItem item;
   final Function() onRemove;

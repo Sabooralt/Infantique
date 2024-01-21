@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                GridView.builder(
+                /*GridView.builder(
                   physics: const NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -70,11 +70,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisSpacing: 20,
                     mainAxisSpacing: 20,
                   ),
-                  itemCount: products.length,
+                  itemCount: Product.length,
                   itemBuilder: (context, index) {
                     return ProductCard(product: products[index]);
                   },
-                ),
+                ),*/
               ],
             ),
           ),
