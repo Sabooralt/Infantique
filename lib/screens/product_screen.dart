@@ -49,15 +49,6 @@ class _ProductScreenState extends State<ProductScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const ProductAppBar(),
-              ImageSlider(
-                onChange: (index) {
-                  setState(() {
-                    currentImage = index;
-                  });
-                },
-                currentImage: currentImage,
-                image: widget.product.image,
-              ),
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

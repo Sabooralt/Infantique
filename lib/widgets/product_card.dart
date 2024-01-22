@@ -30,11 +30,7 @@ class ProductCard extends StatelessWidget {
             Container(
               child: Column(
                 children: [
-                  Image.asset(
-                    product.image,
-                    width: 112,
-                    height: 112,
-                  ),
+
                   SizedBox(
                     height: 5,
                   ),

@@ -1,6 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:infantique/models/product.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:infantique/widgets/loadingManager.dart';
+
 
 class AdminPanel extends StatefulWidget {
   @override
@@ -13,22 +20,17 @@ class _AdminPanelState extends State<AdminPanel> {
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController imageController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
 
   final ProductService productService = ProductService();
-  final Product myProduct = Product(
-    id: '',
-    title: '',
-    description: '',
-    category: '',
-    image: '',
-    price: 0,
-  );
+
+  List<File> _images = [];
 
   String successMessage = '';
   String errorMessage = '';
+
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +38,7 @@ class _AdminPanelState extends State<AdminPanel> {
       appBar: AppBar(
         title: Text('Admin Panel'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -51,17 +53,44 @@ class _AdminPanelState extends State<AdminPanel> {
               decoration: InputDecoration(labelText: 'Product Description'),
             ),
             SizedBox(height: 16.0),
-            TextField(
-              controller: imageController,
-              decoration: InputDecoration(labelText: 'Product Image URL'),
+            ElevatedButton(
+              onPressed: () async {
+                final pickedImages = await _getImages();
+                if (pickedImages != null) {
+                  setState(() {
+                    _images = pickedImages;
+                    successMessage = ''; // Clear success message when picking new images
+                    errorMessage = ''; // Clear error message when picking new images
+                  });
+                }
+              },
+              child: Text('Pick Images'),
             ),
+            _images.isNotEmpty
+                ? CarouselSlider.builder(
+              itemCount: _images.length,
+              itemBuilder: (context, index, realIndex) {
+                return Image.network(
+                  _images[index].path, // Assuming '_images' is a list of File
+                  fit: BoxFit.cover,
+                  height: 150,
+                );
+              },
+              options: CarouselOptions(
+                aspectRatio: 16 / 9,
+                viewportFraction: 0.6,
+                autoPlay: false,
+              ),
+            )
+                : SizedBox(height: 0),
+
             SizedBox(height: 16.0),
             TextField(
               controller: priceController,
               decoration: InputDecoration(labelText: 'Product Price'),
               keyboardType: TextInputType.number,
               inputFormatters: <TextInputFormatter>[
-                FilteringTextInputFormatter.digitsOnly, // Allow only numeric input
+                FilteringTextInputFormatter.digitsOnly,
               ],
             ),
             SizedBox(height: 16.0),
@@ -77,21 +106,17 @@ class _AdminPanelState extends State<AdminPanel> {
               child: Text('Add Product'),
             ),
             SizedBox(height: 16.0),
-            // Display success or error message
             Text(successMessage, style: TextStyle(color: Colors.green)),
             Text(errorMessage, style: TextStyle(color: Colors.red)),
             SizedBox(height: 16.0),
-            // Display the list of products
-            Expanded(
-              child: RefreshIndicator(
-                key: _refreshIndicatorKey,
-                onRefresh: () async {
-                  await _refreshProducts();
-                },
-                child: ProductList(
-                  productService: productService,
-                  refreshProducts: _refreshProducts,
-                ),
+            RefreshIndicator(
+              key: _refreshIndicatorKey,
+              onRefresh: () async {
+                await _refreshProducts();
+              },
+              child: ProductList(
+                productService: productService,
+                refreshProducts: _refreshProducts,
               ),
             ),
           ],
@@ -100,14 +125,71 @@ class _AdminPanelState extends State<AdminPanel> {
     );
   }
 
+  Future<List<File>> _getImages() async {
+    List<File> selectedImages = [];
+
+    try {
+      final picker = ImagePicker();
+
+      if (kIsWeb) {
+        // Use web-specific code (e.g., image_picker_web) for Flutter web
+        // Example: https://pub.dev/packages/image_picker_web
+        // Note: Replace the following line with the actual web implementation
+        throw UnimplementedError('Web implementation not provided');
+      } else {
+        List<XFile>? pickedImages = await picker.pickMultiImage();
+
+        if (pickedImages != null) {
+          selectedImages = pickedImages.map((image) => File(image.path)).toList();
+        }
+      }
+    } on PlatformException catch (e) {
+      print("Error picking images: $e");
+    }
+
+    return selectedImages;
+  }
+
+
+
+  Future<List<String>> _uploadImages(List<File> images) async {
+    List<String> imageUrls = [];
+
+    try {
+      for (File image in images) {
+        firebase_storage.Reference storageReference =
+        firebase_storage.FirebaseStorage.instance
+            .ref()
+            .child('product_images/${DateTime.now().millisecondsSinceEpoch}');
+
+        firebase_storage.UploadTask uploadTask = storageReference.putFile(image);
+        await uploadTask.whenComplete(() => null);
+
+        String imageUrl = await storageReference.getDownloadURL();
+        imageUrls.add(imageUrl);
+      }
+      setState(() {
+        _isLoading = true;
+      });
+
+      return imageUrls;
+    } catch (error) {
+      print(error);
+      throw 'Error uploading images: $error';
+    }finally{
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+
   Future<void> _addProduct() async {
     String title = nameController.text.trim();
     String description = descriptionController.text.trim();
-    String image = imageController.text.trim();
     String category = categoryController.text.trim();
 
-    if (title.isEmpty || description.isEmpty || image.isEmpty ||
-        category.isEmpty) {
+    if (title.isEmpty || description.isEmpty || category.isEmpty) {
       setState(() {
         errorMessage = 'Please fill in all fields.';
         successMessage = '';
@@ -117,50 +199,61 @@ class _AdminPanelState extends State<AdminPanel> {
 
     double price = double.tryParse(priceController.text.trim()) ?? 0.0;
 
-    Product newProduct = Product(
-      id: '',
-      // This will be assigned by Firestore
-      title: title,
-      description: description,
-      image: image,
-      price: price,
-      category: category,
-    );
-
     try {
-      await productService.addProduct(newProduct);
-      setState(() {
-        successMessage = 'Product added successfully!';
-        errorMessage = '';
-      });
+      if (_images.isNotEmpty) {
+        List<String> imagePaths = await _uploadImages(_images);
 
-      // Clear the text fields after adding a product
-      nameController.clear();
-      descriptionController.clear();
-      imageController.clear();
-      priceController.clear();
-      categoryController.clear();
+        Product newProduct = Product(
+          id: '',
+          title: title,
+          description: description,
+          images: imagePaths,
+          price: price,
+          category: category,
+        );
+
+        await productService.addProduct(newProduct);
+
+        setState(() {
+          successMessage = 'Product added successfully!';
+          errorMessage = '';
+          _clearFields();
+        });
+      } else {
+        setState(() {
+          errorMessage = 'Please pick at least one image.';
+          successMessage = '';
+          _isLoading = true;
+        });
+      }
     } catch (error) {
       setState(() {
         errorMessage = 'Error adding product: $error';
         successMessage = '';
       });
       _refreshIndicatorKey.currentState?.show();
+    }finally{
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
-
-  // Manually trigger a refresh
-
+  void _clearFields() {
+    nameController.clear();
+    descriptionController.clear();
+    priceController.clear();
+    categoryController.clear();
+    setState(() {
+      _images = [];
+    });
+  }
 
   Future<void> _refreshProducts() async {
     // Implement your logic to refresh the product list
-    setState(() {
-      // Manually trigger a refresh by rebuilding the widget
-    });
+    setState(() {});
   }
 }
-
 
 class ProductList extends StatelessWidget {
   final ProductService productService;
@@ -184,7 +277,7 @@ class ProductList extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-        Text(
+              Text(
                 'Product List ($productCount)',
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
@@ -197,11 +290,9 @@ class ProductList extends StatelessWidget {
                     },
                     child: Text('Refresh'),
                   ),
-                  // Add your loading screen widget here
                 ],
               ),
               SizedBox(height: 8.0),
-              // Display the list of products
               ListView.builder(
                 shrinkWrap: true,
                 itemCount: products.length,
@@ -217,19 +308,26 @@ class ProductList extends StatelessWidget {
                           Text(product.description),
                         ],
                       ),
-                      leading: product.image.isNotEmpty
+                      leading: product.images.isNotEmpty
                           ? Container(
                         width: 50,
                         height: 50,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          image: DecorationImage(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(product.image),
-                          ),
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: product.images.length,
+                          itemBuilder: (context, imageIndex) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 5.0),
+                              child: CircleAvatar(
+                                radius: 20,
+                                backgroundImage:
+                                NetworkImage(product.images[imageIndex]),
+                              ),
+                            );
+                          },
                         ),
                       )
-                          : SizedBox(width: 50, height: 50), // Placeholder for image if empty
+                          : SizedBox(width: 50, height: 50),
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -253,8 +351,6 @@ class ProductList extends StatelessWidget {
                   );
                 },
               ),
-
-
             ],
           );
         }

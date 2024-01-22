@@ -36,9 +36,7 @@ class CartTile extends StatelessWidget {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 padding: const EdgeInsets.all(10),
-                child: Image.asset(
-                  item.product.image,
-                ),
+
               ),
               const SizedBox(width: 10),
               Column(
