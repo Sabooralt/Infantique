@@ -1,18 +1,19 @@
+import 'package:infantique/admin_panel/AdminPanel.dart';
 import 'package:infantique/screens/main_screen.dart';
-import 'package:infantique/screens//signup_screen.dart';
+import 'package:infantique/screens/sellers/SellersAuth.dart';
+import 'package:infantique/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:infantique/widgets/LoadingOverlay.dart';
 import 'package:infantique/widgets/loadingManager.dart';
-import 'constants.dart';
+import 'package:infantique/controllers/user_controller.dart';
 import 'package:infantique/admin_panel/product_crud.dart';
-import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:iconly/iconly.dart';
 
 
 class loginscreen extends StatefulWidget {
 
   final String? successMessage; // Receive success message as a parameter
-  const loginscreen({Key? key, this.successMessage}) : super(key: key);
+  const loginscreen({super.key, this.successMessage});
 
   @override
   State<loginscreen> createState() => _loginscreenState();
@@ -44,34 +45,46 @@ bool _isLoading = false;
       });
       return;
     }
+
     setState(() {
       _isLoading = true;
     });
 
     try {
-
       // Sign in the user with email and password
       LoadingManager().showLoading(context);
-      // Simulate asynchronous sign-in process
 
-      await _auth.signInWithEmailAndPassword(
+      // Simulate asynchronous sign-in process
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
 
-      // If successful, navigate to the main screen or perform other actions
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MainScreen(),
-        ),
-      );
+      // Check if the signed-in user is a seller
+      bool isSeller = await UserController.isUserSeller(userCredential.user!.uid);
+
+      // If the user is a seller, show an error message and sign out
+      if (isSeller) {
+        await _auth.signOut();
+        setState(() {
+          _errorMessage = 'Seller accounts are not allowed here';
+          _messageColor = Colors.red;
+        });
+      } else {
+        // Proceed with navigation to the main screen
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainScreen(),
+          ),
+        );
+      }
     } catch (e) {
       // Handle sign-in errors (e.g., wrong password, user not found)
       print('Error during sign in: $e');
       setState(() {
         _errorMessage = 'Invalid email or password';
-        _messageColor =  Colors.red;
+        _messageColor = Colors.red;
       });
     } finally {
       setState(() {
@@ -82,6 +95,7 @@ bool _isLoading = false;
       LoadingManager().hideLoading();
     }
   }
+
 
 
 
@@ -98,7 +112,7 @@ bool _isLoading = false;
                 "assets/logo1.png",
                 width: 200,
               ),
-              Align(
+              const Align(
                 alignment: Alignment.center,
                 child: Text(
                   "Login",
@@ -108,7 +122,7 @@ bool _isLoading = false;
                       color: Colors.purple),
                 ),
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 50),
                 child: Column(
@@ -116,38 +130,38 @@ bool _isLoading = false;
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                          labelStyle: TextStyle(color: Colors.grey),
+                          labelStyle: const TextStyle(color: Colors.grey),
                           labelText: "Enter Email",
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25.0),
-                            borderSide: BorderSide(color: Colors.purpleAccent),
+                            borderSide: const BorderSide(color: Colors.purpleAccent),
                           ),
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.email_sharp,
                             color: Colors.purpleAccent,
                           )),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextFormField(
                       controller: _passwordController,
                       decoration: InputDecoration(
-                          labelStyle: TextStyle(color: Colors.grey),
+                          labelStyle: const TextStyle(color: Colors.grey),
                           labelText: "Enter Password",
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(25.0),
-                            borderSide: BorderSide(color: Colors.purpleAccent),
+                            borderSide: const BorderSide(color: Colors.purpleAccent),
                           ),
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.key,
                             color: Colors.purpleAccent,
                           ),
-                          suffixIcon: Icon(Icons.remove_red_eye)),
+                          suffixIcon: const Icon(Icons.remove_red_eye)),
                     ),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: TextButton(
                           onPressed: () {},
-                          child: Text(
+                          child: const Text(
                             "Forgot Password",
                             style: TextStyle(
                               fontSize: 12,
@@ -156,10 +170,43 @@ bool _isLoading = false;
                             ),
                           )),
                     ),
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
+                    FilledButton.tonalIcon(
+                      onPressed: () async {
+                        try {
+                          final user = await UserController.loginWithGoogle();
+                          if (user != null && mounted) {
+                            Navigator.of(context).pushReplacement(MaterialPageRoute(
+                                builder: (context) => const MainScreen()));
+                            print('Success');
+                          }
+                        } on FirebaseAuthException catch (error) {
+                          print(error.message);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                error.message ?? "Something went wrong",
+                              )));
+                        } catch (error) {
+                          print(error);
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                error.toString(),
+                              )));
+                        }
+                      },
+                      icon: const Icon(IconlyLight.login),
+                      label: const Text("Continue with Google"),
+                    ),
                     ElevatedButton(
                       onPressed: _signIn,
-                      child: Text(
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(55),
+                        backgroundColor: Colors.purpleAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      child: const Text(
                         "Log In",
                         style: TextStyle(
                           fontSize: 18,
@@ -167,16 +214,9 @@ bool _isLoading = false;
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size.fromHeight(55),
-                        backgroundColor: Colors.purpleAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
                     ),
                     if (_errorMessage != null)
-                      SizedBox(
+                      const SizedBox(
                           height:
                               10), // Add spacing between the button and the message
                     Text(
@@ -186,37 +226,29 @@ bool _isLoading = false;
                             )
                     ),
 
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "Don't have an Account?",
                           style: TextStyle(
                             fontSize: 15,
                             color: Colors.black54,
                           ),
                         ),
-                        TextButton(onPressed: (){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => AdminPanel(),
-                              ));
-                        }, child: Text("Admin Panel")
 
-                        ),
                         TextButton(
                             onPressed: () {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => signupscreen(),
+                                    builder: (context) => const signupscreen(),
                                   ));
                             },
-                            child: Text(
+                            child: const Text(
                               "Sign Up",
                               style: TextStyle(
                                 fontSize: 16,
@@ -225,7 +257,29 @@ bool _isLoading = false;
                               ),
                             )),
                       ],
-                    )
+                    ),
+                    const SizedBox(height: 20,),
+                    TextButton(
+                        onPressed: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AdminPanelPage(),
+                          ));
+                    }, child: const Text("Admin Panel")
+
+                    ),
+                    const SizedBox(height: 5,),
+                    TextButton(
+                        onPressed: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SellerAuthPage(),
+                              ));
+                        }, child: const Text("Seller Login")
+
+                    ),
                   ],
                 ),
               )

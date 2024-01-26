@@ -1,34 +1,33 @@
-import 'package:flutter/material.dart';
+
+
 import 'dart:io';
+
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:infantique/admin_panel/UpdateProductScreen.dart';
+import 'package:infantique/constants.dart';
 import 'package:infantique/controllers/seller_controller.dart';
 import 'package:infantique/models/product.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:infantique/widgets/loadingManager.dart';
 import 'package:uuid/uuid.dart';
 
-import '../constants.dart';
-
-
-
-class AdminPanel extends StatefulWidget {
-  const AdminPanel({super.key});
+class AddProduct extends StatefulWidget {
+  const AddProduct({super.key});
 
   @override
-  _AdminPanelState createState() => _AdminPanelState();
+  _AddProductState createState() => _AddProductState();
 }
 
-class _AdminPanelState extends State<AdminPanel> {
+class _AddProductState extends State<AddProduct> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
   GlobalKey<RefreshIndicatorState>();
 
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
-  final TextEditingController sellerNameController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
   final ProductService productService = ProductService();
   final SellerAuthController sellerAuthController = SellerAuthController();
@@ -40,13 +39,11 @@ class _AdminPanelState extends State<AdminPanel> {
   String successMessage = '';
   String errorMessage = '';
 
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Panel'),
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -128,10 +125,6 @@ class _AdminPanelState extends State<AdminPanel> {
             ),
             const SizedBox(height: 16.0),
 
-            TextField(
-              controller: sellerNameController,
-              decoration: const InputDecoration(labelText: 'Seller Name'),
-            ),
 
 
             const SizedBox(height: 16.0),
@@ -148,22 +141,22 @@ class _AdminPanelState extends State<AdminPanel> {
               },
               child: const Text('Add Product'),
             ),
-
             const SizedBox(height: 16.0),
             Text(successMessage, style: const TextStyle(color: Colors.green)),
             Text(errorMessage, style: const TextStyle(color: Colors.red)),
-            const SizedBox(height: 16.0),
-            RefreshIndicator(
-              key: _refreshIndicatorKey,
-              onRefresh: () async {
-                await _refreshProducts();
-              },
-              child: ProductList(
-                productService: productService,
-                refreshProducts: _refreshProducts,
-              ),
-            ),
           ],
+        ),
+      ),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        flexibleSpace: const Center(
+          child: Text(
+            'Add Product',
+            style: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );
@@ -176,9 +169,9 @@ class _AdminPanelState extends State<AdminPanel> {
       final picker = ImagePicker();
 
 
-        List<XFile>? pickedImages = await picker.pickMultiImage();
+      List<XFile>? pickedImages = await picker.pickMultiImage();
 
-        selectedImages = pickedImages.map((image) => File(image.path)).toList();
+      selectedImages = pickedImages.map((image) => File(image.path)).toList();
         } on PlatformException catch (e) {
       print("Error picking images: $e");
     }
@@ -209,6 +202,7 @@ class _AdminPanelState extends State<AdminPanel> {
       }
 
       setState(() {
+        _isLoading = true;
       });
 
       return imageUrls;
@@ -217,6 +211,7 @@ class _AdminPanelState extends State<AdminPanel> {
       throw 'Error uploading images: $error';
     } finally {
       setState(() {
+        _isLoading = false;
       });
     }
   }
@@ -265,6 +260,7 @@ class _AdminPanelState extends State<AdminPanel> {
         setState(() {
           errorMessage = 'Please pick at least one image.';
           successMessage = '';
+          _isLoading = true;
         });
       }
     } catch (error) {
@@ -284,7 +280,6 @@ class _AdminPanelState extends State<AdminPanel> {
     descriptionController.clear();
     priceController.clear();
     categoryController.clear();
-    sellerNameController.clear();
     setState(() {
       _images = [];
     });
@@ -296,96 +291,3 @@ class _AdminPanelState extends State<AdminPanel> {
   }
 }
 
-class ProductList extends StatelessWidget {
-  final ProductService productService;
-  final Function refreshProducts;
-
-  const ProductList({super.key, required this.productService, required this.refreshProducts});
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<List<Product>>(
-      future: productService.getProducts(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        } else if (snapshot.hasError) {
-          return Text('Error: ${snapshot.error}');
-        } else {
-          List<Product> products = snapshot.data ?? [];
-          int productCount = products.length;
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'Product List ($productCount)',
-                style: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      refreshProducts(); // Manually trigger a refresh
-                    },
-                    child: const Text('Refresh'),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8.0),
-              ListView.builder(
-                shrinkWrap: true,
-                itemCount: products.length,
-                itemBuilder: (context, index) {
-                  Product product = products[index];
-                  return Card(
-                    child: ListTile(
-                      title: Text(product.title),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('\$${product.price.toStringAsFixed(2)}'),
-                          Text(product.description),
-                        ],
-                      ),
-                      leading: product.images.isNotEmpty
-                          ? CircleAvatar(
-                        radius: 20,
-                        backgroundImage: NetworkImage(product.images.first),
-                      )
-                          : const SizedBox(width: 40, height: 40), // Placeholder for no images
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.update),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => UpdateProductScreen(product: product),
-                                ),
-                              );
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () async {
-                              await productService.deleteProduct(product.id);
-                              refreshProducts(); // Manually trigger a refresh after deletion
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ],
-          );
-        }
-      },
-    );
-  }
-}

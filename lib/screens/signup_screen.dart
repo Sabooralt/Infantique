@@ -4,6 +4,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:infantique/widgets/LoadingOverlay.dart';
 import 'package:infantique/widgets/loadingManager.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 class signupscreen extends StatefulWidget {
   const signupscreen({Key? key}) : super(key: key);
@@ -18,9 +20,76 @@ class _signupscreenState extends State<signupscreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+  GoogleSignIn _googleSignIn = GoogleSignIn();
 
   String _message = '';
   bool _isLoading = false;
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+      await _googleSignIn.signIn();
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleSignInAuthentication.accessToken,
+          idToken: googleSignInAuthentication.idToken,
+        );
+
+        final UserCredential authResult =
+        await _auth.signInWithCredential(credential);
+        final User? user = authResult.user;
+
+        // Save user data to Firestore and authentication table
+        if (user != null) {
+          await _saveUserDataToFirestore(user);
+        }
+
+        print('Google Sign-In success: ${user?.displayName}');
+      }
+    } catch (error) {
+      print('Error during Google Sign-In: $error');
+      // Handle the error as needed
+    }
+  }
+
+  Future<void> _saveUserDataToFirestore(User user) async {
+    // Get a reference to the users collection in Firestore
+    CollectionReference usersCollection =
+    FirebaseFirestore.instance.collection('users');
+
+    // Check if the user already exists in Firestore
+    DocumentSnapshot userSnapshot =
+    await usersCollection.doc(user.uid).get();
+
+    if (!userSnapshot.exists) {
+      // If the user doesn't exist, add them to Firestore
+      await usersCollection.doc(user.uid).set({
+        'username': user.displayName,
+        'email': user.email,
+        // Add other user-related information as needed
+      });
+    } else {
+      // If the user already exists, update their information
+      await usersCollection.doc(user.uid).update({
+        'username': user.displayName,
+        'email': user.email,
+        // Add other user-related information as needed
+      });
+    }
+
+    // Save user data to the authentication table
+    await _auth.currentUser?.updateProfile(displayName: user.displayName);
+
+    // You can add additional fields to the authentication table if needed
+    // For example, you might want to store user metadata in Firebase Authentication
+    // Note: This is optional and depends on your application's requirements
+    await _auth.currentUser?.reload();
+  }
+
+
+
 
   FirebaseAuth _auth = FirebaseAuth.instance;
   @override
@@ -47,7 +116,7 @@ class _signupscreenState extends State<signupscreen> {
               ),
               SizedBox(height: 15),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 50),
+                padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Column(
                   children: [
                     TextFormField(
@@ -56,7 +125,7 @@ class _signupscreenState extends State<signupscreen> {
                           labelStyle: TextStyle(color: Colors.grey),
                           labelText: "Enter Name",
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25.0),
+                            borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Colors.purpleAccent),
                           ),
                           prefixIcon: Icon(
@@ -71,7 +140,7 @@ class _signupscreenState extends State<signupscreen> {
                           labelStyle: TextStyle(color: Colors.grey),
                           labelText: "Enter Email",
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25.0),
+                            borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Colors.purpleAccent),
                           ),
                           prefixIcon: Icon(
@@ -86,7 +155,7 @@ class _signupscreenState extends State<signupscreen> {
                           labelStyle: TextStyle(color: Colors.grey),
                           labelText: "Enter Password",
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25.0),
+                            borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Colors.purpleAccent),
                           ),
                           prefixIcon: Icon(
@@ -102,7 +171,7 @@ class _signupscreenState extends State<signupscreen> {
                           labelStyle: TextStyle(color: Colors.grey),
                           labelText: "Confirm Password",
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(25.0),
+                            borderRadius: BorderRadius.circular(20.0),
                             borderSide: BorderSide(color: Colors.purpleAccent),
                           ),
                           prefixIcon: Icon(
@@ -205,12 +274,13 @@ class _signupscreenState extends State<signupscreen> {
                           LoadingManager().hideLoading();
                         }
                       },
+
                       child: Text(
                         "Create Account",
                         style: TextStyle(
                             fontSize: 18,
                             color: Colors.white,
-                            fontWeight: FontWeight.bold),
+                            fontWeight: FontWeight.normal),
                       ),
                       style: ElevatedButton.styleFrom(
                         minimumSize: Size.fromHeight(55),
@@ -220,6 +290,27 @@ class _signupscreenState extends State<signupscreen> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 10),
+                    Text('-or-'),
+                    SignInButton(
+                      Buttons.google,
+                      text: "Sign up with Google",
+                      onPressed: () async {
+                        try {
+                          await _handleGoogleSignIn();
+                        } catch (e) {
+                          print('Error during Google Sign-In: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Google Sign-In failed: $e'),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+
+
                     SizedBox(
                         height:
                             10), // Add spacing between the button and the message

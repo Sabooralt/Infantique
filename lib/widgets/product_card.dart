@@ -30,7 +30,13 @@ class ProductCard extends StatelessWidget {
             Container(
               child: Column(
                 children: [
-
+                  Image.network(
+                    product.images.isNotEmpty
+                        ? product.images[0]
+                        : '', // Use the first image URL, provide a default empty string
+                    width: 112,
+                    height: 112,
+                  ),
                   SizedBox(
                     height: 5,
                   ),
@@ -45,13 +51,12 @@ class ProductCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
-                        "\$${product.price}",
+                        "Rs./ ${product.price}",
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-
                     ],
                   )
                 ],
