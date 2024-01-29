@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:infantique/screens/home_screen.dart';
 import 'package:infantique/screens/login_screen.dart';
-import 'package:infantique/screens/main_screen.dart';
 import 'package:infantique/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -24,6 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
@@ -48,9 +47,9 @@ class Authentication extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.active) {
             User? user = snapshot.data as User?;
 
-            return user == null ? loginscreen() : MyApp();
+            return user == null ? const loginscreen() : const MyApp();
           }
-          return  spscreen();
+          return  const spscreen();
         }
     );
   }

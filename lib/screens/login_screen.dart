@@ -105,6 +105,7 @@ bool _isLoading = false;
         return Material(
       child: SingleChildScrollView(
         child: SafeArea(
+
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

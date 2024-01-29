@@ -44,6 +44,30 @@ class ProductService {
   final CollectionReference _productsCollection =
   FirebaseFirestore.instance.collection('products');
 
+  Future<List<Product>> getSearchedProducts({
+    required String searchQuery,
+  }) async {
+    try {
+      String lowerCaseQuery = searchQuery.toLowerCase();
+
+      QuerySnapshot snapshot = await _productsCollection.get();
+
+      List<Product> results = snapshot.docs
+          .map((doc) => Product.fromFirestore(doc))
+          .where((product) =>
+      product.title.toLowerCase().contains(lowerCaseQuery) ||
+          product.category.toLowerCase().contains(lowerCaseQuery))
+          .toList();
+
+      print('Products Fetched Successfully');
+      return results;
+    } catch (e) {
+      print('Error fetching searched products: $e');
+      return [];
+    }
+  }
+
+
   Future<List<Product>> getProducts() async {
     QuerySnapshot snapshot = await _productsCollection.get();
     return snapshot.docs.map((doc) => Product.fromFirestore(doc)).toList();

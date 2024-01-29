@@ -10,82 +10,63 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 250,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: kcontentColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: InkWell(
+    double width, height;
+    width = MediaQuery.of(context).size.width;
+    height = MediaQuery.of(context).size.height;
+    return Card(
+        child: InkWell(
         onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => ProductScreen(product: product),
-            ),
-          );
-        },
-        child: Stack(
-          children: [
-            Container(
-              child: Column(
-                children: [
-                  Image.network(
-                    product.images.isNotEmpty
-                        ? product.images[0]
-                        : '', // Use the first image URL, provide a default empty string
-                    width: 112,
-                    height: 112,
-                  ),
-                  SizedBox(
-                    height: 5,
-                  ),
-                  Text(
-                    product.title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Text(
-                        "Rs./ ${product.price}",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-            ),
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.topRight,
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => ProductScreen(product: product),
+        ),
+      );
+    },
+      child: Container(
+        height: height * 0.3,
+        width: width * 0.2 * 2 + 10,
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              flex: 3,
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 10),
                 child: Container(
-                  width: 30,
-                  height: 30,
-                  decoration: const BoxDecoration(
-                    color: kprimaryColor,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(20),
-                      bottomLeft: Radius.circular(10),
+                  width: 160,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: NetworkImage(product.images.isNotEmpty
+                          ? product.images[0]
+                          : '',),
                     ),
-                  ),
-                  child: const Icon(
-                    Ionicons.heart_outline,
-                    color: Colors.white,
-                    size: 18,
                   ),
                 ),
+              ),
+            ),
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    "Rs. ${product.price}",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 17,
+                        color: Color(0xffad44f1)),
+                  ),
+                  Container(
+                    child: Text(
+                      product.title,
+                      style: TextStyle(fontSize: 15),
+                    ),
+                  )
+                ],
               ),
             ),
           ],
         ),
       ),
+        )
     );
   }
 }
