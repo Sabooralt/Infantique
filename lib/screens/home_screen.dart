@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:infantique/constants.dart';
-import 'package:infantique/models/category.dart';
 import 'package:infantique/models/product.dart';
+import 'package:infantique/screens/allProducts.dart';
 import 'package:infantique/widgets/categories.dart';
-import 'package:infantique/widgets/home_appbar.dart';
 import 'package:infantique/widgets/home_slider.dart';
 import 'package:infantique/widgets/product_card.dart';
 import 'package:infantique/widgets/search_field.dart';
-import 'package:infantique/controllers/user_controller.dart';
 import 'package:infantique/widgets/Email_Verifaction_Widget.dart';
 
 
@@ -35,7 +32,6 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const HomeAppBar(),
                 const SizedBox(height: 20),
                 const SearchField(),
 
@@ -56,19 +52,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                      Text(
-                      UserController.user?.displayName ?? '',
+                     'Featured Products',
                       style: TextStyle(
-                        fontSize: 24,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    CircleAvatar(
-                      foregroundImage:
-                      NetworkImage(UserController.user?.photoURL ?? ''),
-                    ),
+
                     TextButton(
 
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AllProductsScreen(),
+                          ),
+                        );
+                      },
                       child: const Text("See all"),
                     ),
                   ],
@@ -91,6 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          childAspectRatio: 0.75,
                           crossAxisCount: 2,
                           crossAxisSpacing: 20,
                           mainAxisSpacing: 20,

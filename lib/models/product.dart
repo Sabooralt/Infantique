@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:infantique/models/reviews.dart';
+import 'package:infantique/models/userDetails.dart';
 
 class Product {
   final String id;
@@ -8,7 +10,8 @@ class Product {
   final List<String> images;
   final double price;
   final String category;
-  final List<String> reviews;
+
+  final List<Review> reviews;
 
   Product({
     required this.id,
@@ -17,6 +20,7 @@ class Product {
     required this.images,
     required this.price,
     required this.category,
+
     required this.reviews,
   });
 
@@ -26,7 +30,11 @@ class Product {
     data ??= {};
 
     List<String> imageUrls = List<String>.from(data['image'] ?? []);
-    List<String> productReviews = List<String>.from(data['reviews'] ?? []);
+    List<dynamic> reviewDataList = data['reviews'] ?? [];
+
+    List<Review> productReviews = reviewDataList
+        .map((reviewData) => Review.fromMap(reviewData))
+        .toList();
 
     return Product(
       id: doc.id,
@@ -102,13 +110,18 @@ class ProductService {
 
   Future<void> updateProduct(Product product) async {
     if (_isValidCategory(product.category)) {
+      List<Map<String, dynamic>> reviewDataList = product.reviews
+          .map((review) => review.toMap())
+          .toList();
+
       await _productsCollection.doc(product.id).update({
         'title': product.title,
         'description': product.description,
         'images': product.images,
         'price': product.price,
         'category': product.category,
-        'reviews': product.reviews,
+        if (product.reviews.isNotEmpty) 'reviews': reviewDataList,
+        // Add other fields as needed
       });
     } else {
       throw Exception('Invalid category selected');
@@ -135,4 +148,51 @@ class ProductService {
     List<String> allowedCategories = ['feeding', 'bath', 'safety', 'diapers', 'toys'];
     return allowedCategories.contains(category);
   }
+
+
+
+
+
+  Future<String> fetchSellerName(String sellerId) async {
+    try {
+      // Replace this with your actual logic to fetch seller information from Firestore
+      // Assuming you have a collection named 'sellers'
+      DocumentSnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+          .collection('sellers')
+          .doc(sellerId)
+          .get();
+
+      if (snapshot.exists) {
+        return snapshot['sellerName'].toString(); // Replace with the actual field name containing seller's name
+      } else {
+        return 'Unknown Seller';
+      }
+    } catch (e) {
+      print('Error fetching seller information: $e');
+      throw e;
+    }
+  }
+
+  Future<List<Review>> getProductReviews(String productId) async {
+    try {
+      // Assuming there is a separate collection for reviews named 'product_reviews'
+      CollectionReference reviewsCollection = FirebaseFirestore.instance.collection('reviews');
+
+      // Query reviews for the specific product ID
+      QuerySnapshot reviewsSnapshot = await reviewsCollection.where('productId', isEqualTo: productId).get();
+
+      // Extract reviews data
+      List<Review> reviews = reviewsSnapshot.docs
+          .map((reviewDoc) => Review.fromMap(reviewDoc.data() as Map<String, dynamic>))
+          .toList();
+
+      print('Fetched reviews: $reviews');
+      return reviews;
+    } catch (e) {
+      print('Error fetching product reviews: $e');
+      return [];
+    }
+  }
+
+
 }

@@ -1,3 +1,4 @@
+import 'package:infantique/controllers/user_controller.dart';
 import 'package:infantique/screens/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -25,73 +26,7 @@ class _signupscreenState extends State<signupscreen> {
   String _message = '';
   bool _isLoading = false;
 
-  Future<void> _handleGoogleSignIn() async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-      await _googleSignIn.signIn();
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-        await googleSignInAccount.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
 
-        final UserCredential authResult =
-        await _auth.signInWithCredential(credential);
-        final User? user = authResult.user;
-
-        // Save user data to Firestore and authentication table
-        if (user != null) {
-          await _saveUserDataToFirestore(user);
-        }
-
-        print('Google Sign-In success: ${user?.displayName}');
-      }
-    } catch (error) {
-      print('Error during Google Sign-In: $error');
-      // Handle the error as needed
-    }
-  }
-
-  Future<void> _saveUserDataToFirestore(User user) async {
-    // Get a reference to the users collection in Firestore
-    CollectionReference usersCollection =
-    FirebaseFirestore.instance.collection('users');
-
-    // Check if the user already exists in Firestore
-    DocumentSnapshot userSnapshot =
-    await usersCollection.doc(user.uid).get();
-
-    if (!userSnapshot.exists) {
-      // If the user doesn't exist, add them to Firestore
-      await usersCollection.doc(user.uid).set({
-        'username': user.displayName,
-        'email': user.email,
-        // Add other user-related information as needed
-      });
-    } else {
-      // If the user already exists, update their information
-      await usersCollection.doc(user.uid).update({
-        'username': user.displayName,
-        'email': user.email,
-        // Add other user-related information as needed
-      });
-    }
-
-    // Save user data to the authentication table
-    await _auth.currentUser?.updateProfile(displayName: user.displayName);
-
-    // You can add additional fields to the authentication table if needed
-    // For example, you might want to store user metadata in Firebase Authentication
-    // Note: This is optional and depends on your application's requirements
-    await _auth.currentUser?.reload();
-  }
-
-
-
-
-  FirebaseAuth _auth = FirebaseAuth.instance;
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -216,8 +151,9 @@ class _signupscreenState extends State<signupscreen> {
                               .collection('users')
                               .doc(userCredential.user?.uid)
                               .set({
-                            'username': _nameController.text,
+                            'displayName': _nameController.text,
                             'email': _emailController.text,
+                            'photoURL' : 'https://png.pngtree.com/png-vector/20190710/ourmid/pngtree-user-vector-avatar-png-image_1541962.jpg'
                             // Add other user-related information as needed
                           });
 
@@ -297,7 +233,8 @@ class _signupscreenState extends State<signupscreen> {
                       text: "Sign up with Google",
                       onPressed: () async {
                         try {
-                          await _handleGoogleSignIn();
+                          CircularProgressIndicator();
+                          await UserController().handleGoogleSignIn();
                         } catch (e) {
                           print('Error during Google Sign-In: $e');
                           ScaffoldMessenger.of(context).showSnackBar(

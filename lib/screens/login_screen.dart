@@ -8,6 +8,7 @@ import 'package:infantique/widgets/loadingManager.dart';
 import 'package:infantique/controllers/user_controller.dart';
 import 'package:infantique/admin_panel/product_crud.dart';
 import 'package:iconly/iconly.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 
 
 class loginscreen extends StatefulWidget {
@@ -171,33 +172,18 @@ bool _isLoading = false;
                             ),
                           )),
                     ),
-                    const SizedBox(height: 50),
-                    FilledButton.tonalIcon(
-                      onPressed: () async {
-                        try {
-                          final user = await UserController.loginWithGoogle();
-                          if (user != null && mounted) {
-                            Navigator.of(context).pushReplacement(MaterialPageRoute(
-                                builder: (context) => const MainScreen()));
-                            print('Success');
-                          }
-                        } on FirebaseAuthException catch (error) {
-                          print(error.message);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                error.message ?? "Something went wrong",
-                              )));
-                        } catch (error) {
-                          print(error);
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                error.toString(),
-                              )));
-                        }
-                      },
-                      icon: const Icon(IconlyLight.login),
-                      label: const Text("Continue with Google"),
+                    if (_errorMessage != null)
+                      const SizedBox(height: 20), // Add spacing between the button and the message
+                    Text(
+                        _errorMessage!,
+                        style: TextStyle(
+                          color: _messageColor,
+                        )
                     ),
+
+
+                    const SizedBox(height: 10,),
+
                     ElevatedButton(
                       onPressed: _signIn,
                       style: ElevatedButton.styleFrom(
@@ -216,19 +202,28 @@ bool _isLoading = false;
                         ),
                       ),
                     ),
-                    if (_errorMessage != null)
-                      const SizedBox(
-                          height:
-                              10), // Add spacing between the button and the message
-                    Text(
-                      _errorMessage!,
-                      style: TextStyle(
-                           color: _messageColor,
-                            )
-                    ),
-
-                    const SizedBox(
-                      height: 15,
+                    SizedBox(height: 5,),
+                    SignInButton(
+                      Buttons.google,
+                      text: "Sign In with Google",
+                      onPressed: () async {
+                        CircularProgressIndicator();
+                        try {
+                          CircularProgressIndicator();
+                          await UserController().handleGoogleSignIn();
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(
+                              builder: (context) => const MainScreen()));
+                          print('Success');
+                        } catch (e) {
+                          print('Error during Google Sign-In: $e');
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Google Sign-In failed: $e'),
+                              duration: Duration(seconds: 3),
+                            ),
+                          );
+                        }
+                      },
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -259,28 +254,34 @@ bool _isLoading = false;
                             )),
                       ],
                     ),
-                    const SizedBox(height: 20,),
-                    TextButton(
-                        onPressed: (){
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => AdminPanelPage(),
-                          ));
-                    }, child: const Text("Admin Panel")
+                    const SizedBox(height: 2,),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            TextButton(
+                onPressed: (){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AdminPanelPage(),
+                      ));
+                }, child: const Text("Admin Panel")
 
-                    ),
-                    const SizedBox(height: 5,),
-                    TextButton(
-                        onPressed: (){
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SellerAuthPage(),
-                              ));
-                        }, child: const Text("Seller Login")
+            ),
+            const SizedBox(height: 5,),
+            TextButton(
+                onPressed: (){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SellerAuthPage(),
+                      ));
+                }, child: const Text("Seller Login")
 
-                    ),
+            ),
+        ]
+        ),
+
                   ],
                 ),
               )

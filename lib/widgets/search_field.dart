@@ -10,7 +10,7 @@ class SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         Navigator.push(
           context,
@@ -58,7 +58,12 @@ class SearchField extends StatelessWidget {
               color: Colors.grey,
             ),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SearchScreen()),
+                );
+              },
               icon: const Icon(
                 Ionicons.options_outline,
                 color: Colors.grey,
