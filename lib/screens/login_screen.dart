@@ -1,3 +1,4 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:infantique/admin_panel/AdminPanel.dart';
 import 'package:infantique/screens/main_screen.dart';
 import 'package:infantique/screens/sellers/SellersAuth.dart';
@@ -82,7 +83,6 @@ bool _isLoading = false;
       }
     } catch (e) {
       // Handle sign-in errors (e.g., wrong password, user not found)
-      print('Error during sign in: $e');
       setState(() {
         _errorMessage = 'Invalid email or password';
         _messageColor = Colors.red;
@@ -202,24 +202,22 @@ bool _isLoading = false;
                         ),
                       ),
                     ),
-                    SizedBox(height: 5,),
+                    const SizedBox(height: 5,),
                     SignInButton(
                       Buttons.google,
                       text: "Sign In with Google",
                       onPressed: () async {
-                        CircularProgressIndicator();
+                        EasyLoading.show(status: 'loading...');
                         try {
-                          CircularProgressIndicator();
                           await UserController().handleGoogleSignIn();
                           Navigator.of(context).pushReplacement(MaterialPageRoute(
                               builder: (context) => const MainScreen()));
-                          print('Success');
+                          EasyLoading.dismiss();
                         } catch (e) {
-                          print('Error during Google Sign-In: $e');
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Google Sign-In failed: $e'),
-                              duration: Duration(seconds: 3),
+                              duration: const Duration(seconds: 3),
                             ),
                           );
                         }

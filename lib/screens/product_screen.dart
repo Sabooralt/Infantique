@@ -423,6 +423,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     ),
                   ),
                   Container(
+
                     width: double.infinity,
                     color: Colors.white,
                     padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),

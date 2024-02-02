@@ -21,7 +21,7 @@ class RatingManager {
       if (snapshot.size == 0) {
         // No reviews found for the product
         print('600');
-        return 600; // or return a default value
+        return 0; // or return a default value
       }else{
 
 
