@@ -59,7 +59,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Custom_Appbar(),
+      appBar: Custom_Appbar(title: Text('Search Results For : $searchResults')),
       body: SafeArea(
         child: SingleChildScrollView(
           child : Padding(

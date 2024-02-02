@@ -106,6 +106,9 @@ class DeliveryAddress {
 
   DeliveryAddress({required this.name, required this.address, required this.documentId});
 
+
+
+
   static Future<void> deleteAddressFromFirestore(String documentId) async {
     try {
       String userUID = FirebaseAuth.instance.currentUser!.uid;

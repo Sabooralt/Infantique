@@ -32,6 +32,7 @@ class _AdminPanelState extends State<AdminPanel> {
   final TextEditingController categoryController = TextEditingController();
   final ProductService productService = ProductService();
   final SellerAuthController sellerAuthController = SellerAuthController();
+  final TextEditingController quantityController = TextEditingController();
 
 
 
@@ -226,6 +227,7 @@ class _AdminPanelState extends State<AdminPanel> {
     String title = nameController.text.trim();
     String description = descriptionController.text.trim();
     String category = categoryController.text.trim();
+    String quantityText = quantityController.text.trim();
 
     LoadingManager().showLoading(context);
 
@@ -252,6 +254,7 @@ class _AdminPanelState extends State<AdminPanel> {
           price: price,
           category: category,
           reviews: [],
+          quantity: int.tryParse(quantityText) ?? 0
         );
 
         await productService.addProduct(newProduct, sellerId);

@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:infantique/EditUserProfile.dart';
 import 'package:infantique/controllers/user_controller.dart';
 import 'package:infantique/controllers/user_settings_controller.dart';
+import 'package:infantique/models/orders_model.dart';
+import 'package:infantique/screens/OrderDetailsScreen.dart';
 import 'package:infantique/screens/login_screen.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:infantique/screens/main_screen.dart';
 import 'package:infantique/screens/user/change_password.dart';
 
 class UserProfile extends StatefulWidget {
@@ -16,9 +19,21 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   List<DeliveryAddress> deliveryAddresses = [];
   List<Map<String, dynamic>> paymentMethods = [];
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  OrderService orderService = OrderService();
+
+  String getCurrentUserId() {
+    User? user = FirebaseAuth.instance.currentUser;
+
+    if (user != null) {
+      return user.uid;
+    } else {
+      // Handle the case where the user is not logged in
+      return '';
+    }
+  }
+
   @override
-
-
   void initState() {
     super.initState();
     // Fetch delivery addresses when the screen initializes
@@ -40,12 +55,12 @@ class _UserProfileState extends State<UserProfile> {
             // Delivery Addresses Section
             SectionTitle('Delivery Addresses'),
 
-
             ListTile(
               title: Text('Add Delivery Address'),
               leading: Icon(Icons.add),
               onTap: () {
-                User_Settings_Controller.showAddAddressDialog(context, (newAddress) async {
+                User_Settings_Controller.showAddAddressDialog(context,
+                    (newAddress) async {
                   // Add the new address to Firestore
                   await _addAddressToFirestore(newAddress);
 
@@ -65,30 +80,47 @@ class _UserProfileState extends State<UserProfile> {
                     documentId: deliveryAddress.documentId,
                     onDelete: (deletedId) {
                       setState(() {
-                        paymentMethods.removeWhere((method) => method['documentId'] == deletedId);
+                        paymentMethods.removeWhere(
+                            (method) => method['documentId'] == deletedId);
                       });
                     },
                   ),
               ],
             ),
+          SectionTitle('Orders'),
+            Column(children: [
+              FutureBuilder<List<MyOrder>>(
+                  future: fetchOrders(),
+                  builder: (context, snapshot) {
 
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // Show loading indicator while fetching orders
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      // Handle error if fetching orders fails
+                      return Center(
+                          child:
+                              Text('Error fetching orders: ${snapshot.error}'));
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      // Show a message if there are no orders
+                      return Center(child: Text('No orders available.'));
+                    } else {
+                      // Create a list of OrderCard widgets
+                      List<Widget> orderCards = snapshot.data!.map((order) {
+                        return OrderCard(order.orderNumber, order.status);
+                      }).toList();
+                     print('Orders Fetched orderId');
+                      // Return a ListView with OrderCard widgets
+                      return Column(
 
-
-
-            /* for (DeliveryAddress address in deliveryAddresses)
-              DeliveryAddressCard(
-                address.name,
-                address.address,
-              ),*/
-
-
-
+                        children: orderCards,
+                      );
+                    }
+                  })
+            ]),
 
 
             // Orders Section
-            SectionTitle('Orders'),
-            OrderCard('Order #1', 'Delivered'),
-            OrderCard('Order #2', 'In Progress'),
 
             // Profile Settings Section
             SectionTitle('Profile Settings'),
@@ -99,9 +131,8 @@ class _UserProfileState extends State<UserProfile> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                    builder: (context) => EditProfileScreen(),
-                )
-                );
+                      builder: (context) => EditProfileScreen(),
+                    ));
               },
             ),
             ListTile(
@@ -112,8 +143,7 @@ class _UserProfileState extends State<UserProfile> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => ChangePasswordScreen(),
-                    )
-                );
+                    ));
               },
             ),
 
@@ -123,10 +153,10 @@ class _UserProfileState extends State<UserProfile> {
               title: Text('Add Payment Method'),
               leading: Icon(Icons.add),
               onTap: () {
-                PaymentController.showAddPaymentMethodDialog(context, (newPaymentMethod) async {
+                PaymentController.showAddPaymentMethodDialog(context,
+                    (newPaymentMethod) async {
                   // Add the new payment method to Firestore
-               await _addPaymentToFirestore(newPaymentMethod);
-
+                  await _addPaymentToFirestore(newPaymentMethod);
 
                   // Update the state to reflect the new payment method
                   setState(() {
@@ -146,7 +176,6 @@ class _UserProfileState extends State<UserProfile> {
               },
             ),
 
-
             Column(
               children: [
                 for (var paymentMethod in paymentMethods)
@@ -155,13 +184,13 @@ class _UserProfileState extends State<UserProfile> {
                     documentId: paymentMethod['documentId'],
                     onDelete: (deletedId) {
                       setState(() {
-                        paymentMethods.removeWhere((method) => method['documentId'] == deletedId);
+                        paymentMethods.removeWhere(
+                            (method) => method['documentId'] == deletedId);
                       });
                     },
                   ),
               ],
             ),
-
 
             // Logout Section
             SectionTitle('Logout'),
@@ -204,10 +233,9 @@ class _UserProfileState extends State<UserProfile> {
                 } catch (e) {
                   // Handle errors if necessary
                   print('Error: $e');
-                  Navigator.pop(context);  // Close the loading indicator
+                  Navigator.pop(context); // Close the loading indicator
                 }
               },
-
             ),
           ],
         ),
@@ -215,7 +243,12 @@ class _UserProfileState extends State<UserProfile> {
     );
 
   }
-//Retrieve Delivery address from firebase
+
+  Future<List<MyOrder>> fetchOrders() async {
+    String userId = getCurrentUserId();
+    List<MyOrder> orders = await orderService.fetchOrders(userId);
+    return orders;
+  }
 
   Future<void> _fetchUserDeliveryAddresses() async {
     try {
@@ -270,9 +303,6 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-
-
-
   //Add Payment Methods To Firebase
 
   // Fetch Payment Methods from Firestore
@@ -303,8 +333,6 @@ class _UserProfileState extends State<UserProfile> {
     }
   }
 
-
-
   Future<void> _addPaymentToFirestore(String cardInfo) async {
     try {
       String userUID = FirebaseAuth.instance.currentUser!.uid;
@@ -315,7 +343,6 @@ class _UserProfileState extends State<UserProfile> {
           .collection('payment_methods')
           .add({
         'card_info': cardInfo,
-
       });
 
       print('Payment method added to Firestore!');
@@ -323,7 +350,54 @@ class _UserProfileState extends State<UserProfile> {
       print('Error adding payment method to Firestore: $e');
     }
   }
+}
 
+Future<List<Map<String, dynamic>>> fetchOrdersWithProductDetails(
+    String userId) async {
+  try {
+    // Reference to the "orders" collection
+    CollectionReference ordersCollection =
+        FirebaseFirestore.instance.collection('orders');
+
+    // Fetch orders for the specified user ID
+    QuerySnapshot ordersSnapshot =
+        await ordersCollection.where('userId', isEqualTo: userId).get();
+
+    // Extract order details from each document
+    List<Map<String, dynamic>> orders = [];
+    for (DocumentSnapshot orderSnapshot in ordersSnapshot.docs) {
+      Map<String, dynamic> orderDetails =
+          orderSnapshot['orderDetails'] as Map<String, dynamic>;
+
+      // Fetch product details for each product in the order
+      List<Map<String, dynamic>> products =
+          await Future.wait(orderDetails['products'].map((product) async {
+        String productId = product['productId'];
+        // Fetch product details from the 'products' collection
+        DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
+            .collection('products')
+            .doc(productId)
+            .get();
+        return productSnapshot.data() as Map<String, dynamic>;
+      }).toList());
+
+      // Combine order details with product details
+      Map<String, dynamic> orderWithProductDetails = {
+        'orderId': orderSnapshot.id,
+        'orderDetails': orderDetails,
+        'products': products,
+        // Add other order-related details as needed
+      };
+
+      orders.add(orderWithProductDetails);
+    }
+
+    return orders;
+  } catch (e) {
+    print('Error fetching orders: $e');
+    // Handle the error as needed
+    throw Exception('Error fetching orders. Please try again.');
+  }
 }
 
 class SectionTitle extends StatelessWidget {
@@ -349,7 +423,11 @@ class DeliveryAddressCard extends StatelessWidget {
   final String documentId;
   final Function(String) onDelete;
 
-  DeliveryAddressCard({required this.name, required this.address, required this.documentId, required this.onDelete});
+  DeliveryAddressCard(
+      {required this.name,
+      required this.address,
+      required this.documentId,
+      required this.onDelete});
 
   @override
   Widget build(BuildContext context) {
@@ -368,7 +446,8 @@ class DeliveryAddressCard extends StatelessWidget {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: Text('Delete Delivery Address'),
-                  content: Text('Are you sure you want to delete this delivery address?'),
+                  content: Text(
+                      'Are you sure you want to delete this delivery address?'),
                   actions: [
                     TextButton(
                       onPressed: () {
@@ -379,7 +458,8 @@ class DeliveryAddressCard extends StatelessWidget {
                     TextButton(
                       onPressed: () async {
                         // Delete the delivery address from Firestore based on documentId
-                        await DeliveryAddress.deleteAddressFromFirestore(documentId);
+                        await DeliveryAddress.deleteAddressFromFirestore(
+                            documentId);
 
                         // Call the onDelete callback
                         onDelete(documentId);
@@ -387,7 +467,8 @@ class DeliveryAddressCard extends StatelessWidget {
                         // Optionally, you can display a SnackBar or perform other UI updates
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Delivery address deleted successfully!'),
+                            content:
+                                Text('Delivery address deleted successfully!'),
                           ),
                         );
 
@@ -423,7 +504,13 @@ class OrderCard extends StatelessWidget {
         trailing: IconButton(
           icon: Icon(Icons.info),
           onPressed: () {
-            // Implement order details screen
+            // Navigate to OrderDetailsScreen and pass order details
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MainScreen(),
+              ),
+            );
           },
         ),
       ),
@@ -458,7 +545,8 @@ class PaymentMethodCard extends StatelessWidget {
               builder: (BuildContext context) {
                 return AlertDialog(
                   title: Text('Delete Payment Method'),
-                  content: Text('Are you sure you want to delete this payment method?'),
+                  content: Text(
+                      'Are you sure you want to delete this payment method?'),
                   actions: [
                     TextButton(
                       onPressed: () {
@@ -469,16 +557,19 @@ class PaymentMethodCard extends StatelessWidget {
                     TextButton(
                       onPressed: () async {
                         // Delete the payment method from Firestore based on documentId
-                        await PaymentController.deletePaymentFromFirestore(documentId);
+                        await PaymentController.deletePaymentFromFirestore(
+                            documentId);
 
                         // Optionally, you can display a SnackBar or perform other UI updates
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Payment method deleted successfully!'),
+                            content:
+                                Text('Payment method deleted successfully!'),
                           ),
                         );
 
-                        onDelete(documentId); // Notify the parent about the deletion
+                        onDelete(
+                            documentId); // Notify the parent about the deletion
                         Navigator.pop(context); // Close the confirmation dialog
                       },
                       child: Text('Delete'),

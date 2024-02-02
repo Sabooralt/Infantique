@@ -221,6 +221,7 @@ class _AddProductState extends State<AddProduct> {
     String title = nameController.text.trim();
     String description = descriptionController.text.trim();
     String category = categoryController.text.trim();
+    int quantity = 0;
 
     LoadingManager().showLoading(context);
 
@@ -247,6 +248,7 @@ class _AddProductState extends State<AddProduct> {
           price: price,
           category: category,
           reviews: [],
+          quantity: quantity
         );
 
         await productService.addProduct(newProduct, sellerId);

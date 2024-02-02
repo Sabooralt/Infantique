@@ -149,6 +149,7 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
                 price: double.parse(priceController.text),
                category: categoryController.text,
                 reviews: widget.product.reviews,
+                quantity: widget.product.quantity,
               );
 
               List<String> originalImages = widget.product.images;

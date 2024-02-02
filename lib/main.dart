@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:infantique/models/cart_provider.dart';
 import 'package:infantique/screens/login_screen.dart';
 import 'package:infantique/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
@@ -12,8 +15,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
+
+  runApp(MyApp());
 }
+
 
 
 class MyApp extends StatelessWidget {
@@ -21,7 +26,17 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    EasyLoading.init();
+
+    return MultiProvider(
+        providers: [
+        ChangeNotifierProvider<CartProvider>(
+        create: (context) => CartProvider(),
+    ),
+
+    ],
+    child: MaterialApp(
+
       navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
@@ -31,6 +46,10 @@ class MyApp extends StatelessWidget {
         textTheme: GoogleFonts.mulishTextTheme(),
       ),
       home: const spscreen(),
+      builder: EasyLoading.init(
+
+      ),
+    )
     );
   }
 

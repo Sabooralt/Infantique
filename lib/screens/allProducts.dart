@@ -21,7 +21,7 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Custom_Appbar(),
+      appBar: Custom_Appbar( title: Text(''),),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

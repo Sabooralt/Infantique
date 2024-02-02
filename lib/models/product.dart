@@ -10,6 +10,7 @@ class Product {
   final List<String> images;
   final double price;
   final String category;
+  int quantity;
 
   final List<Review> reviews;
 
@@ -20,7 +21,7 @@ class Product {
     required this.images,
     required this.price,
     required this.category,
-
+    required this.quantity,
     required this.reviews,
   });
 
@@ -44,6 +45,7 @@ class Product {
       price: (data['price'] ?? 0).toDouble(),
       category: data['category'] ?? '',
       reviews: productReviews,
+      quantity: data['quantity'] ?? 0,
     );
   }
 }

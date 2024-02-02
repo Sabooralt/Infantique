@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 
@@ -22,26 +23,36 @@ class ProfileController {
 
   static Future<void> updateProfile(BuildContext context, TextEditingController nameController, TextEditingController emailController) async {
     User? user = FirebaseAuth.instance.currentUser;
-
+    EasyLoading.show(status: 'loading...');
     if (user != null && user.emailVerified) {
       try {
         await user.updateDisplayName(nameController.text);
         await user.updateEmail(emailController.text);
 
         if (_pickedImage != null) {
-          // Update the profile picture only if an image is picked
-          String imageUrl = await _uploadImageToStorage(_pickedImage!.path);
-          await _updateUserProfile(imageUrl);
-          _pickedImage = null; // Reset picked image after updating
-        }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Profile updated successfully!'),
-          ),
+          String imageUrl = await _uploadImageToStorage(_pickedImage!.path);
+
+          await _updateUserProfile(imageUrl);
+          _pickedImage = null;
+          EasyLoading.dismiss();// Reset picked image after updating
+        }
+        Future.delayed(Duration(milliseconds: 300), () {
+          EasyLoading.showToast(
+            duration: Duration(milliseconds: 1200),
+            'Profile updated successfully!',
+            dismissOnTap: true,
+          );
+        },
         );
+
       } catch (e) {
-        print('Error updating name and email: $e');
+
+          EasyLoading.showToast(
+            duration: Duration(milliseconds: 1200),
+            'Error: $e',
+            dismissOnTap: true,
+          );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

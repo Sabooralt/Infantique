@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:infantique/controllers/profile_controller.dart';
-
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -27,7 +27,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _updateProfile() async {
-    await ProfileController.updateProfile(context, _nameController, _emailController);
+    await ProfileController.updateProfile(
+        context, _nameController, _emailController);
   }
 
   @override
@@ -41,50 +42,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-
-
             CircleAvatar(
               radius: 50,
-              backgroundColor: Colors.transparent,
-              backgroundImage: ProfileController.pickedImage != null
-                  ? FileImage(File(ProfileController.pickedImage!.path)) as ImageProvider<Object>?
-                  : NetworkImage(FirebaseAuth.instance.currentUser?.photoURL ?? ''),
-              child: Stack(
-                children: [
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () async {
-                        // Call a function to pick the image
-                        XFile? pickedImage = await ProfileController.pickImage(context);
-                        if (pickedImage != null) {
-                          setState(() {});
-                        }
-                      },
-                    ),
-                  ),
-                ],
+              backgroundColor: Colors.black,
+              child: ClipOval(
+                child: ProfileController.pickedImage != null
+                    ? Image.file(
+                        File(ProfileController.pickedImage!.path),
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
+                      )
+                    : Image.network(
+                        FirebaseAuth.instance.currentUser?.photoURL ?? '',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.contain,
+                      ),
               ),
             ),
-
-            /*   CircleAvatar(
-              radius: 50,
-              foregroundImage: ProfileController.pickedImage != null
-                  ? FileImage(File(ProfileController.pickedImage!.path)) as ImageProvider<Object>?
-                  : NetworkImage(FirebaseAuth.instance.currentUser?.photoURL ?? '') as ImageProvider<Object>?,
-              child: IconButton(
-                icon: Icon(Icons.edit),
-                onPressed: () async {
-                  // Call a function to pick the image
-                  XFile? pickedImage = await ProfileController.pickImage(context);
-                  if (pickedImage != null) {
-                    setState(() {});
-                  }
-                },
-              ),
-            ),*/
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
