@@ -9,12 +9,13 @@ import 'package:infantique/screens/widgets/product_widgets/information.dart';
 import 'package:infantique/screens/widgets/product_widgets/product_desc.dart';
 import 'package:infantique/screens/widgets/product_widgets/category_details.dart';
 import 'package:infantique/screens/widgets/reviewForm.dart';
-import 'package:infantique/widgets/product_widgets/add_to_cart.dart';
+
 import 'package:infantique/widgets/product_widgets/image_slider.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/models/reviews.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 import '../constants.dart';
 
@@ -133,14 +134,29 @@ class _ProductScreenState extends State<ProductScreen> {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  // Handle "Add to Cart" button press
+                  CartProvider cartProvider = Provider.of<CartProvider>(context, listen: false);
+                  cartProvider.addToCart(widget.product, 1);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${widget.product.title} added to cart'),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
                 },
                 style: ElevatedButton.styleFrom(
+                  backgroundColor: Vx.indigo700, // text color
+                  elevation: 5,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                child: Text('Add to Cart'),
+                child: Text('Add to Cart',
+    style: TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+    ),
+
+                ),
               ),
             ),
             SizedBox(width: 8), // Add some space between the buttons
@@ -150,15 +166,21 @@ class _ProductScreenState extends State<ProductScreen> {
                   // Handle "Buy Now" button press
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.yellow, // background color
-                  onPrimary: Colors.black, // text color
+                  foregroundColor: Colors.black,
+                  backgroundColor: kprimaryColor, // text color
                   elevation: 5,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0),
 
                   ),
                 ),
-                child: Text('Buy Now'),
+                child: Text('Buy Now',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+
+                ),
               ),
             ),
           ],
@@ -166,22 +188,7 @@ class _ProductScreenState extends State<ProductScreen> {
       ],
 
       backgroundColor: kcontentColor,
-      floatingActionButton: AddToCart(
-        currentNumber: currentNumber,
-        onAdd: () {
-          setState(() {
-            currentNumber++;
-          });
-        },
-        onRemove: () {
-          if (currentNumber != 1) {
-            setState(() {
-              currentNumber--;
-            });
-          }
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
 
       body: SafeArea(
         child: ListView(
@@ -287,19 +294,7 @@ class _ProductScreenState extends State<ProductScreen> {
                   ProductCat(categoryName: widget.product.category),
                    const SizedBox(height: 10),
                   ProductDescription(text: widget.product.description),
-                  ElevatedButton(
-                    onPressed: () {
-                      CartProvider cartProvider = Provider.of<CartProvider>(context, listen: false);
-                      cartProvider.addToCart(widget.product, 1);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('${widget.product.title} added to cart'),
-                          duration: const Duration(seconds: 2),
-                        ),
-                      );
-                    },
-                    child: const Text('Add to Cart'),
-                  ),
+
                    const SizedBox(height: 40,),
                   // Ratings & Reviews Section
                   Container(
@@ -318,12 +313,7 @@ class _ProductScreenState extends State<ProductScreen> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () => _showReviewForm(context, widget.product),
-                            child: const Text('Add a Review'),
-                          ),
-                        ),
+
                         const SizedBox(height: 10),
                         if (productReviews != null && productReviews!.isNotEmpty)
                           Column(
@@ -375,6 +365,38 @@ class _ProductScreenState extends State<ProductScreen> {
                               );
                             }).toList(),
                           ),
+                        const SizedBox(height: 20,),
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: () => _showReviewForm(context, widget.product),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Vx.indigo700, // text color
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                            ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.add,
+                                  color: Colors.white,
+
+                                  ), // Add your desired icon
+                                  SizedBox(width: 8), // Adjust the spacing between the icon and text
+                                  Text('Add a Review',
+
+                                  style:
+                                    TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                          ),
+                        ),
                       ],
                     ),
                   ),

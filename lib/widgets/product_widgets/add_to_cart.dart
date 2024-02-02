@@ -74,7 +74,7 @@ class AddToCart extends StatelessWidget {
               alignment: Alignment.center,
               padding: const EdgeInsets.symmetric(horizontal: 40),
               child: const Text(
-                "Add to Cart",
+                "Add asdasdrt",
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
