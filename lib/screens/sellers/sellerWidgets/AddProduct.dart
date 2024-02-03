@@ -248,7 +248,9 @@ class _AddProductState extends State<AddProduct> {
           price: price,
           category: category,
           reviews: [],
-          quantity: quantity
+          quantity: quantity,
+          sellerId: sellerId,
+          averageRating: 0.0
         );
 
         await productService.addProduct(newProduct, sellerId);

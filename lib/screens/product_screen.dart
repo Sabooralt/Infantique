@@ -402,26 +402,33 @@ class _ProductScreenState extends State<ProductScreen> {
                   ),
 
                   // Service
+                  const SizedBox(height: 20,),
                   Container(
-                    width: 200,
-                    color: Colors.white,
-                    padding:  const EdgeInsets.symmetric(
-                        horizontal: 15, vertical: 20),
-                    margin:  const EdgeInsets.only(top: 10),
-                    child:  const Column(
+                    padding: EdgeInsets.all(16.0), // Adjust padding as needed
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.grey), // Add a border for visual separation
+                      borderRadius: BorderRadius.circular(8.0), // Optional: Add border radius for rounded corners
+                    ),
+                    child: Column(
+
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Service',
+                          'Service', // Add your desired heading
                           style: TextStyle(
-                            fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            fontSize: 18.0,
                           ),
                         ),
-                        // Add more details about service and delivery...
+                         SizedBox(height: 12.0),
+                        _buildServiceOption("14 days free & easy return", Ionicons.checkmark_circle, Colors.green),
+                        SizedBox(height: 8.0), // Add vertical space between options
+                        _buildServiceOption("Warranty not available", Ionicons.warning, Colors.black),
                       ],
                     ),
                   ),
+
                   Container(
 
                     width: double.infinity,
@@ -505,7 +512,18 @@ class _ProductScreenState extends State<ProductScreen> {
 
 
 
-
+  Widget _buildServiceOption(String text, IconData icon, Color iconColor) {
+    return Row(
+      children: [
+        Icon(
+          icon,
+          color: iconColor,
+        ),
+        SizedBox(width: 8.0),
+        Text(text),
+      ],
+    );
+  }
 
 
   _showReviewForm(BuildContext context, Product product) {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:infantique/constants.dart';
+import 'package:infantique/models/RatingManager.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/allProducts.dart';
 import 'package:infantique/widgets/categories.dart';
@@ -7,7 +8,6 @@ import 'package:infantique/widgets/home_slider.dart';
 import 'package:infantique/widgets/product_card.dart';
 import 'package:infantique/widgets/search_field.dart';
 import 'package:infantique/widgets/Email_Verifaction_Widget.dart';
-
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,7 +24,6 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kscaffoldColor,
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -34,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 const SizedBox(height: 20),
                 const SearchField(),
-
                 const SizedBox(height: 20),
                 HomeSlider(
                   onChange: (value) {
@@ -51,16 +49,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                     Text(
-                     'Featured Products',
+                    Text(
+                      'Featured Products',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-
                     TextButton(
-
                       onPressed: () {
                         Navigator.push(
                           context,
@@ -90,7 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       return GridView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           childAspectRatio: 0.75,
                           crossAxisCount: 2,
                           crossAxisSpacing: 20,
@@ -98,7 +95,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         itemCount: products.length,
                         itemBuilder: (context, index) {
-                          return ProductCard(product: products[index]);
+                          return ProductCard(
+                            product: products[index],
+                          );
                         },
                       );
                     }

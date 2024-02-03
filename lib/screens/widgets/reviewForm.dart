@@ -125,11 +125,43 @@ class _ReviewFormState extends State<ReviewForm> {
     );
   }
 
+  Future<double> _calculateAverageRating(String productId) async {
+    // Fetch the reviews for the specific product
+    QuerySnapshot<Map<String, dynamic>> snapshot = await FirebaseFirestore.instance
+        .collection('reviews')
+        .where('productId', isEqualTo: productId)
+        .get();
+
+    if (snapshot.size == 0) {
+      // No reviews found for the product
+      return 0; // or return a default value
+    }
+
+    // Calculate the average rating
+    double totalRating = snapshot.docs.fold(0.0, (sum, doc) => sum + ((doc['rating'] ?? 0) as num).toDouble());
+    double averageRating = totalRating / snapshot.size;
+
+    // Format the result to 2 decimal places
+    return double.parse(averageRating.toStringAsFixed(2));
+  }
+
+  Future<void> _updateProductAverageRating(String productId, double averageRating) async {
+    // Update the product document with the new average rating
+    await FirebaseFirestore.instance.collection('products').doc(productId).update({
+      'averageRating': averageRating,
+    });
+
+    print('Product average rating updated successfully');
+  }
+
+
   Future<void> saveReviewToFirestore(Review review) async {
     try {
       await FirebaseFirestore.instance
           .collection('reviews')
-          .add(review.toMap()); // Convert the review object to a map
+          .add(review.toMap());
+      double averageRating = await _calculateAverageRating(review.productId);
+      await _updateProductAverageRating(review.productId, averageRating);// Convert the review object to a map
     } catch (e) {
       print('Error saving review to Firestore: $e');
       // Rethrow the exception to handle it in the calling method

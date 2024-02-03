@@ -10,7 +10,9 @@ class Product {
   final List<String> images;
   final double price;
   final String category;
+  final double averageRating;
   int quantity;
+  final String sellerId;
 
   final List<Review> reviews;
 
@@ -23,6 +25,9 @@ class Product {
     required this.category,
     required this.quantity,
     required this.reviews,
+    required this.sellerId,
+    required this.averageRating
+
   });
 
   factory Product.fromFirestore(DocumentSnapshot doc) {
@@ -32,6 +37,7 @@ class Product {
 
     List<String> imageUrls = List<String>.from(data['image'] ?? []);
     List<dynamic> reviewDataList = data['reviews'] ?? [];
+    double averageRating = (data['averageRating'] ?? 0.0).toDouble();
 
     List<Review> productReviews = reviewDataList
         .map((reviewData) => Review.fromMap(reviewData))
@@ -46,6 +52,8 @@ class Product {
       category: data['category'] ?? '',
       reviews: productReviews,
       quantity: data['quantity'] ?? 0,
+      sellerId: data['sellerId']?? '',
+      averageRating: averageRating
     );
   }
 }
@@ -53,6 +61,8 @@ class Product {
 class ProductService {
   final CollectionReference _productsCollection =
   FirebaseFirestore.instance.collection('products');
+
+
 
   Future<List<Product>> getSearchedProducts({
     required String searchQuery,
@@ -165,7 +175,7 @@ class ProductService {
           .get();
 
       if (snapshot.exists) {
-        return snapshot['sellerName'].toString(); // Replace with the actual field name containing seller's name
+        return snapshot['name'].toString();
       } else {
         return 'Unknown Seller';
       }

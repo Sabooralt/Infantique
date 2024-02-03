@@ -13,46 +13,40 @@ class ProductInfo extends StatefulWidget {
   @override
   _ProductInfoState createState() => _ProductInfoState();
 
-  Future<String> fetchSellerName(String sellerId) async {
-    try {
-      DocumentSnapshot<Map<String, dynamic>> sellerSnapshot = await FirebaseFirestore.instance
-          .collection('sellers')
-          .doc(sellerId)
-          .get();
-
-      if (sellerSnapshot.exists) {
-        return sellerSnapshot['name'] ?? 'Unknown Seller';
-      } else {
-        return 'Unknown Seller';
-      }
-    } catch (e) {
-      print('Error fetching seller name: $e');
-      throw e;
-    }
-  }
 }
 
 class _ProductInfoState extends State<ProductInfo> {
   double averageRating = 0.0;
   int totalReviews = 0;
+  String sellerName = 'Loading...';
 
   @override
   void initState() {
     super.initState();
-    _loadAverageRating();
+    _loadAverageRatingAndSellerName();
   }
 
-  Future<void> _loadAverageRating() async {
-    RatingManager ratingManager = RatingManager();
-    double rating = await ratingManager.getAverageRating(widget.product.id);
-    int reviewsCount = await ratingManager.getReviewsCount(widget.product.id);
+  Future<void> _loadAverageRatingAndSellerName() async {
+    try {
+      RatingManager ratingManager = RatingManager();
+      double rating = await ratingManager.getAverageRating(widget.product.id);
+      int reviewsCount = await ratingManager.getReviewsCount(widget.product.id);
 
-    setState(() {
-      averageRating = rating;
-      totalReviews = reviewsCount;
-    });
-    print('$averageRating , $totalReviews');
+      ProductService productService = ProductService();
+      String sellerName = await productService.fetchSellerName(widget.product.sellerId);
+
+      setState(() {
+        averageRating = rating;
+        totalReviews = reviewsCount;
+        this.sellerName = sellerName;
+      });
+
+      print('$averageRating , $totalReviews, $sellerName');
+    } catch (e) {
+      print('Error loading average rating and seller name: $e');
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +120,7 @@ class _ProductInfoState extends State<ProductInfo> {
                 children: [
                   const TextSpan(text: "Seller: "),
                   TextSpan(
-                    text: 'Loading',
+                    text: '$sellerName',
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),

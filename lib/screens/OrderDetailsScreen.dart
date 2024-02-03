@@ -49,7 +49,7 @@ class OrderDetailsScreen extends StatelessWidget {
 
             return Product(
               id: itemData['productId'],
-              quantity: itemData['quantity'], title: '', images: [], description: '', category: '', reviews: [], price: 0,
+              quantity: itemData['quantity'], title: '', images: [], description: '', category: '', reviews: [], price: 0, sellerId: '',averageRating: 0.0
               // Add other product details as needed
             );
           }).toList();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:infantique/models/RatingManager.dart';
 import 'package:infantique/models/SortingFunctions.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/widgets/custom_app_bar.dart';
@@ -21,7 +22,9 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Custom_Appbar( title: Text(''),),
+      appBar: Custom_Appbar(
+        title: Text(''),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -36,7 +39,8 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
                   },
                   onBrandPressed: () {
                     // Handle brand button press
-                  }, products: allProducts,
+                  },
+                  products: allProducts,
                   onSortingChanged: () {
                     setState(() {
                       // Call the sorting functions here
@@ -62,11 +66,11 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
                       // Products are fetched successfully
                       allProducts = snapshot.data ?? [];
 
-
                       return GridView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           childAspectRatio: 0.75,
                           crossAxisCount: 2,
                           crossAxisSpacing: 20,
@@ -74,7 +78,9 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
                         ),
                         itemCount: allProducts.length,
                         itemBuilder: (context, index) {
-                          return ProductCard(product: allProducts[index]);
+                          return ProductCard(
+                            product: allProducts[index],
+                          );
                         },
                       );
                     }

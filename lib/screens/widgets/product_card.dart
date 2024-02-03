@@ -6,11 +6,13 @@ import 'package:infantique/constants.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/product_screen.dart';
 import 'package:flutter/foundation.dart';
+import '../../models/RatingManager.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
+  final RatingManager ratingManager;
 
-  const ProductCard({Key? key, required this.product}) : super(key: key);
+  const ProductCard({Key? key, required this.product, required this.ratingManager}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,7 @@ class ProductCard extends StatelessWidget {
                   SizedBox(height: 150), // Ensure the text is below the image
                   Text(
                     product.title,
+                    maxLines: 1,
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 13,

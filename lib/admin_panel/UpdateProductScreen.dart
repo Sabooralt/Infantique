@@ -150,6 +150,9 @@ class _UpdateProductScreenState extends State<UpdateProductScreen> {
                category: categoryController.text,
                 reviews: widget.product.reviews,
                 quantity: widget.product.quantity,
+                sellerId: widget.product.sellerId,
+                averageRating: widget.product.averageRating
+
               );
 
               List<String> originalImages = widget.product.images;

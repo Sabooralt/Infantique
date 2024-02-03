@@ -1,13 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RatingManager {
-  static final RatingManager _instance = RatingManager._internal();
 
-  factory RatingManager() {
-    return _instance;
-  }
 
-  RatingManager._internal();
 
   double averageRating = 0.0;
 
@@ -37,6 +32,17 @@ class RatingManager {
       print('Error fetching average rating: $e');
       throw e;
     }
+  }
+
+  Future<void> _updateProductAverageRating(String productId) async {
+    double averageRating = await getAverageRating(productId);
+
+    // Update the product document with the new average rating
+    await FirebaseFirestore.instance.collection('products').doc(productId).update({
+      'averageRating': averageRating,
+    });
+
+    print('Product average rating updated successfully');
   }
 
   Future<int> getReviewsCount(String productId) async {

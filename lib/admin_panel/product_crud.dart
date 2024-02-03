@@ -254,7 +254,9 @@ class _AdminPanelState extends State<AdminPanel> {
           price: price,
           category: category,
           reviews: [],
-          quantity: int.tryParse(quantityText) ?? 0
+          quantity: int.tryParse(quantityText) ?? 0,
+          sellerId: sellerId,
+          averageRating: 0.0
         );
 
         await productService.addProduct(newProduct, sellerId);
