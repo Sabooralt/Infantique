@@ -19,8 +19,8 @@ class AdminSidebar extends StatelessWidget {
             onTap: () => onSectionSelected('Products'),
           ),
           ListTile(
-            title: Text('Add Product'),
-            onTap: () => onSectionSelected('Add Product'),
+            title: Text('Orders'),
+            onTap: () => onSectionSelected('Orders'),
           ),
           ListTile(
             title: Text('Sellers'),

@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:infantique/widgets/loadingManager.dart';
 import 'package:infantique/controllers/user_controller.dart';
-import 'package:infantique/admin_panel/product_crud.dart';
-import 'package:iconly/iconly.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 

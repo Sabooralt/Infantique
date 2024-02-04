@@ -150,7 +150,7 @@ class _ProductScreenState extends State<ProductScreen> {
                     borderRadius: BorderRadius.circular(5.0),
                   ),
                 ),
-                child: Text('Add to Cart',
+                child: const Text('Add to Cart',
     style: TextStyle(
     color: Colors.white,
     fontWeight: FontWeight.bold,
@@ -159,7 +159,7 @@ class _ProductScreenState extends State<ProductScreen> {
                 ),
               ),
             ),
-            SizedBox(width: 8), // Add some space between the buttons
+            const SizedBox(width: 8), // Add some space between the buttons
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
@@ -174,7 +174,7 @@ class _ProductScreenState extends State<ProductScreen> {
 
                   ),
                 ),
-                child: Text('Buy Now',
+                child: const Text('Buy Now',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -376,7 +376,7 @@ class _ProductScreenState extends State<ProductScreen> {
                                 borderRadius: BorderRadius.circular(5.0),
                               ),
                             ),
-                              child: Row(
+                              child: const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Icon(Icons.add,
@@ -404,7 +404,7 @@ class _ProductScreenState extends State<ProductScreen> {
                   // Service
                   const SizedBox(height: 20,),
                   Container(
-                    padding: EdgeInsets.all(16.0), // Adjust padding as needed
+                    padding: const EdgeInsets.all(16.0), // Adjust padding as needed
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(color: Colors.grey), // Add a border for visual separation
@@ -414,16 +414,16 @@ class _ProductScreenState extends State<ProductScreen> {
 
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Service', // Add your desired heading
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18.0,
                           ),
                         ),
-                         SizedBox(height: 12.0),
+                         const SizedBox(height: 12.0),
                         _buildServiceOption("14 days free & easy return", Ionicons.checkmark_circle, Colors.green),
-                        SizedBox(height: 8.0), // Add vertical space between options
+                        const SizedBox(height: 8.0), // Add vertical space between options
                         _buildServiceOption("Warranty not available", Ionicons.warning, Colors.black),
                       ],
                     ),
@@ -519,7 +519,7 @@ class _ProductScreenState extends State<ProductScreen> {
           icon,
           color: iconColor,
         ),
-        SizedBox(width: 8.0),
+        const SizedBox(width: 8.0),
         Text(text),
       ],
     );

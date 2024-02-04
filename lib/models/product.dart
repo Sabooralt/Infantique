@@ -61,8 +61,7 @@ class Product {
 class ProductService {
   final CollectionReference _productsCollection =
   FirebaseFirestore.instance.collection('products');
-
-
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<List<Product>> getSearchedProducts({
     required String searchQuery,
@@ -84,6 +83,43 @@ class ProductService {
     } catch (e) {
       print('Error fetching searched products: $e');
       return [];
+    }
+  }
+  Future<List<Product>> getProductsForOrder(String orderId) async {
+    try {
+      CollectionReference itemsCollection = _firestore.collection('orders').doc(orderId).collection('items');
+      QuerySnapshot itemsSnapshot = await itemsCollection.get();
+
+      List<Product> products = [];
+
+      for (QueryDocumentSnapshot itemDoc in itemsSnapshot.docs) {
+        Map<String, dynamic> itemData = itemDoc.data() as Map<String, dynamic>;
+        Product? productDetails = await getProductById(itemData['productId']);
+        if (productDetails != null) {
+          products.add(productDetails);
+        }
+      }
+
+      return products;
+    } catch (e) {
+      print('Error fetching products for order: $e');
+      throw Exception('Error fetching products for order. Please try again.');
+    }
+  }
+
+  Future<Product?> getProductById(String productId) async {
+    try {
+      DocumentSnapshot<Object?> snapshot = await _productsCollection.doc(productId).get();
+      if (snapshot.exists) {
+        // If the document exists, convert it to a Product object
+        return Product.fromFirestore(snapshot);
+      } else {
+        // If the document doesn't exist, return null or handle it as needed
+        return null;
+      }
+    } catch (e) {
+      print('Error fetching product details: $e');
+      throw Exception('Error fetching product details. Please try again.');
     }
   }
 

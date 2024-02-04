@@ -39,7 +39,7 @@ class _signupscreenState extends State<signupscreen> {
                 "assets/logo1.png",
                 width: 200,
               ),
-              Align(
+              const Align(
                 alignment: Alignment.center,
                 child: Text(
                   "Sign Up",
@@ -49,7 +49,7 @@ class _signupscreenState extends State<signupscreen> {
                       color: Colors.purple),
                 ),
               ),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
                 child: Column(
@@ -57,66 +57,66 @@ class _signupscreenState extends State<signupscreen> {
                     TextFormField(
                       controller: _nameController,
                       decoration: InputDecoration(
-                          labelStyle: TextStyle(color: Colors.grey),
+                          labelStyle: const TextStyle(color: Colors.grey),
                           labelText: "Enter Name",
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.purpleAccent),
+                            borderSide: const BorderSide(color: Colors.purpleAccent),
                           ),
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.person,
                             color: Colors.purpleAccent,
                           )),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextFormField(
                       controller: _emailController,
                       decoration: InputDecoration(
-                          labelStyle: TextStyle(color: Colors.grey),
+                          labelStyle: const TextStyle(color: Colors.grey),
                           labelText: "Enter Email",
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.purpleAccent),
+                            borderSide: const BorderSide(color: Colors.purpleAccent),
                           ),
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.email_sharp,
                             color: Colors.purpleAccent,
                           )),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextFormField(
                       controller: _passwordController,
                       decoration: InputDecoration(
-                          labelStyle: TextStyle(color: Colors.grey),
+                          labelStyle: const TextStyle(color: Colors.grey),
                           labelText: "Enter Password",
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.purpleAccent),
+                            borderSide: const BorderSide(color: Colors.purpleAccent),
                           ),
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.key,
                             color: Colors.purpleAccent,
                           ),
-                          suffixIcon: Icon(Icons.remove_red_eye)),
+                          suffixIcon: const Icon(Icons.remove_red_eye)),
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     TextFormField(
                       controller: _confirmPasswordController,
                       decoration: InputDecoration(
-                          labelStyle: TextStyle(color: Colors.grey),
+                          labelStyle: const TextStyle(color: Colors.grey),
                           labelText: "Confirm Password",
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
-                            borderSide: BorderSide(color: Colors.purpleAccent),
+                            borderSide: const BorderSide(color: Colors.purpleAccent),
                           ),
-                          prefixIcon: Icon(
+                          prefixIcon: const Icon(
                             Icons.key,
                             color: Colors.purpleAccent,
                           ),
-                          suffixIcon: Icon(Icons.remove_red_eye)),
+                          suffixIcon: const Icon(Icons.remove_red_eye)),
                     ),
 
-                    SizedBox(height: 25),
+                    const SizedBox(height: 25),
 
                     ElevatedButton(
                       onPressed: () async {
@@ -167,7 +167,7 @@ class _signupscreenState extends State<signupscreen> {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => loginscreen(
+                              builder: (context) => const loginscreen(
                                   successMessage:
                                       'Account created successfully! Please Log In.'),
                             ),
@@ -210,37 +210,37 @@ class _signupscreenState extends State<signupscreen> {
                           LoadingManager().hideLoading();
                         }
                       },
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(55),
+                        backgroundColor: Colors.purpleAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
 
-                      child: Text(
+                      child: const Text(
                         "Create Account",
                         style: TextStyle(
                             fontSize: 18,
                             color: Colors.white,
                             fontWeight: FontWeight.normal),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size.fromHeight(55),
-                        backgroundColor: Colors.purpleAccent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
                     ),
-                    SizedBox(height: 10),
-                    Text('-or-'),
+                    const SizedBox(height: 10),
+                    const Text('-or-'),
                     SignInButton(
                       Buttons.google,
                       text: "Sign up with Google",
                       onPressed: () async {
                         try {
-                          CircularProgressIndicator();
+                          const CircularProgressIndicator();
                           await UserController().handleGoogleSignIn();
                         } catch (e) {
                           print('Error during Google Sign-In: $e');
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text('Google Sign-In failed: $e'),
-                              duration: Duration(seconds: 3),
+                              duration: const Duration(seconds: 3),
                             ),
                           );
                         }
@@ -248,22 +248,22 @@ class _signupscreenState extends State<signupscreen> {
                     ),
 
 
-                    SizedBox(
+                    const SizedBox(
                         height:
                             10), // Add spacing between the button and the message
                     Text(
                       _message, // Display the message
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.red, // Set the text color
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
+                        const Text(
                           "Already have an Account?",
                           style: TextStyle(
                             fontSize: 15,
@@ -275,10 +275,10 @@ class _signupscreenState extends State<signupscreen> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => loginscreen(),
+                                    builder: (context) => const loginscreen(),
                                   ));
                             },
-                            child: Text(
+                            child: const Text(
                               "Log In",
                               style: TextStyle(
                                 fontSize: 16,

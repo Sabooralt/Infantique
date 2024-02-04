@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:infantique/EditUserProfile.dart';
+import 'package:infantique/screens/user/EditUserProfile.dart';
 import 'package:infantique/controllers/user_controller.dart';
 import 'package:infantique/controllers/user_settings_controller.dart';
 import 'package:infantique/models/orders_model.dart';
@@ -88,7 +88,7 @@ class _UserProfileState extends State<UserProfile> {
               ],
             ),
           SectionTitle('Orders'),
-            Column(children: [
+    Column(children: [
               FutureBuilder<List<MyOrder>>(
                   future: fetchOrders(),
                   builder: (context, snapshot) {
@@ -107,7 +107,30 @@ class _UserProfileState extends State<UserProfile> {
                     } else {
                       // Create a list of OrderCard widgets
                       List<Widget> orderCards = snapshot.data!.map((order) {
-                        return OrderCard(order.orderNumber, order.status);
+
+                        return OrderCard(
+                          orderNumber: order.orderNumber,
+                          orderId: order.orderId,
+                          status: order.status,
+
+                          onTap: () {
+
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OrderDetailsScreen(
+
+
+                                    orderId: order.orderId,
+                                  orderNumber: order.orderNumber,
+
+
+
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       }).toList();
                      print('Orders Fetched orderId');
                       // Return a ListView with OrderCard widgets
@@ -352,53 +375,7 @@ class _UserProfileState extends State<UserProfile> {
   }
 }
 
-Future<List<Map<String, dynamic>>> fetchOrdersWithProductDetails(
-    String userId) async {
-  try {
-    // Reference to the "orders" collection
-    CollectionReference ordersCollection =
-        FirebaseFirestore.instance.collection('orders');
 
-    // Fetch orders for the specified user ID
-    QuerySnapshot ordersSnapshot =
-        await ordersCollection.where('userId', isEqualTo: userId).get();
-
-    // Extract order details from each document
-    List<Map<String, dynamic>> orders = [];
-    for (DocumentSnapshot orderSnapshot in ordersSnapshot.docs) {
-      Map<String, dynamic> orderDetails =
-          orderSnapshot['orderDetails'] as Map<String, dynamic>;
-
-      // Fetch product details for each product in the order
-      List<Map<String, dynamic>> products =
-          await Future.wait(orderDetails['products'].map((product) async {
-        String productId = product['productId'];
-        // Fetch product details from the 'products' collection
-        DocumentSnapshot productSnapshot = await FirebaseFirestore.instance
-            .collection('products')
-            .doc(productId)
-            .get();
-        return productSnapshot.data() as Map<String, dynamic>;
-      }).toList());
-
-      // Combine order details with product details
-      Map<String, dynamic> orderWithProductDetails = {
-        'orderId': orderSnapshot.id,
-        'orderDetails': orderDetails,
-        'products': products,
-        // Add other order-related details as needed
-      };
-
-      orders.add(orderWithProductDetails);
-    }
-
-    return orders;
-  } catch (e) {
-    print('Error fetching orders: $e');
-    // Handle the error as needed
-    throw Exception('Error fetching orders. Please try again.');
-  }
-}
 
 class SectionTitle extends StatelessWidget {
   final String title;
@@ -488,35 +465,36 @@ class DeliveryAddressCard extends StatelessWidget {
 }
 
 class OrderCard extends StatelessWidget {
+  final String orderId;
   final String orderNumber;
   final String status;
 
-  OrderCard(this.orderNumber, this.status);
+  final VoidCallback onTap;
+
+  OrderCard({
+    required this.orderId,
+    required this.orderNumber,
+    required this.status,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 2.0,
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      child: ListTile(
-        title: Text(orderNumber),
-        subtitle: Text('Status: $status'),
-        trailing: IconButton(
-          icon: Icon(Icons.info),
-          onPressed: () {
-            // Navigate to OrderDetailsScreen and pass order details
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => MainScreen(),
-              ),
-            );
-          },
+    return GestureDetector(
+      onTap: onTap,
+      child: Card(
+        elevation: 2.0,
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        child: ListTile(
+          title: Text('$orderNumber'),
+          subtitle: Text('Status: $status'),
+          trailing: Icon(Icons.info),
         ),
       ),
     );
   }
 }
+
 
 class PaymentMethodCard extends StatelessWidget {
   final String cardInfo;

@@ -3,10 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class UserDetails {
   final String userId;
   final String username;
+  final String userEmail;
   final String userPicUrl;
 
   UserDetails({
     this.userId = '',
+    this.userEmail = '',
     this.username = '',
     this.userPicUrl = '',
   });
@@ -21,6 +23,7 @@ Future<UserDetails> fetchUserDetails(String userId) async {
     return UserDetails(
       userId: userId,
       username: userSnapshot['displayName'],
+      userEmail : userSnapshot['email'],
       userPicUrl: userSnapshot['photoURL'],
     );
   } else {
@@ -31,5 +34,9 @@ Future<UserDetails> fetchUserDetails(String userId) async {
       userPicUrl: 'default_userpic_url',
     );
   }
+}
+class UserService{
+
+
 }
 

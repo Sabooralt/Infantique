@@ -17,6 +17,14 @@ class CartProvider extends ChangeNotifier {
     cartItems = []; // Initialize the list in the constructor
   }
 
+  void clearCart() {
+    cartItems.clear();
+    notifyListeners();
+  }
+  DateTime currentDateTime = DateTime.now();
+
+
+
   Future<void> placeOrder(String deliveryAddress, Map<String, dynamic> orderDetails) async {
     try {
       // Get the current user's ID from Firebase Authentication
@@ -29,12 +37,14 @@ class CartProvider extends ChangeNotifier {
       DocumentReference orderDocument = await ordersCollection.add({
         'userId': userId,
         'deliveryAddress': deliveryAddress,
-        'orderNumber': generateOrderNumber(), // Call a function to generate an order number
+        'orderNumber': generateOrderNumber(),
         'status': 'Processing',
-        // Add other order details as needed
+        'orderDetails': orderDetails,
+        'timestamp': currentDateTime,
+
       });
 
-      // Reference to the "items" subcollection inside the order document
+
       CollectionReference itemsCollection = orderDocument.collection('items');
 
       // Save each item in the order
@@ -42,15 +52,13 @@ class CartProvider extends ChangeNotifier {
         await itemsCollection.add({
           'productId': item.product.id,
           'quantity': item.quantity,
-          'orderDetails': orderDetails,
+
 
         });
       }
 
-      // Clear the cart after placing the order
-      cartItems.clear();
 
-      // Notify listeners about the change
+      this.clearCart();
       notifyListeners();
 
       print('Order placed successfully!');

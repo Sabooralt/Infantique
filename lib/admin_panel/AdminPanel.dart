@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/sellers/sellerWidgets/AddProduct.dart';
 import 'package:infantique/widgets/Admin_Widgets/AdminSidebar.dart';
+import 'package:infantique/widgets/Admin_Widgets/Orders.dart';
 import 'package:infantique/widgets/Admin_Widgets/ProductsContent.dart';
+import 'package:infantique/widgets/Admin_Widgets/Sellers.dart';
 import 'package:infantique/widgets/Admin_Widgets/UsersContent.dart';
 
 class AdminPanelPage extends StatefulWidget {
@@ -45,6 +47,10 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
 
   Widget getContent(String section) {
     switch (section) {
+      case 'Orders':
+        return OrdersScreen();
+      case 'Sellers':
+        return Sellers();
       case 'Users':
         return UsersContent();
       case 'Products':
@@ -52,8 +58,6 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
           productService: productService,
           refreshProducts: _refreshProducts,
         );
-      case 'Add Product':
-        return AddProduct();
       default:
         return Text('Select a section from the sidebar');
     }
