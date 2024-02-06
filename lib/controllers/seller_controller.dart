@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:infantique/screens/sellers/SellersAuth.dart';
 
 class SellerAuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -41,7 +40,8 @@ class SellerAuthController {
 
   Future<Seller> getSellerInfo(String uid) async {
     try {
-      DocumentSnapshot sellerSnapshot = await _firestore.collection('sellers').doc(uid).get();
+      DocumentSnapshot sellerSnapshot =
+          await _firestore.collection('sellers').doc(uid).get();
       if (sellerSnapshot.exists) {
         // Create a Seller object using the data from Firestore
         return Seller(
@@ -58,9 +58,11 @@ class SellerAuthController {
     }
   }
 
-  Future<UserCredential> signUp(String email, String password, {required String name}) async {
+  Future<UserCredential> signUp(String email, String password,
+      {required String name}) async {
     try {
-      UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -73,7 +75,7 @@ class SellerAuthController {
         'email': email,
         // Add any other fields you want to store
       });
-print(uid);
+      print(uid);
       return userCredential;
     } catch (e) {
       // Handle signup errors
@@ -81,7 +83,6 @@ print(uid);
       rethrow; // Rethrow the error for the UI to handle
     }
   }
-
 
   Future<void> signOut() async {
     await _auth.signOut();
@@ -91,6 +92,7 @@ print(uid);
     return _auth.currentUser;
   }
 }
+
 class Seller {
   final String id;
   final String name;

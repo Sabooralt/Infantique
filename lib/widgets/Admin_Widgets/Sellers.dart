@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class Sellers extends StatelessWidget {
   const Sellers({super.key});
 
