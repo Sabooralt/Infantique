@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:infantique/constants.dart';
@@ -10,11 +9,11 @@ class CartTile extends StatelessWidget {
   final Function() onAdd;
 
   const CartTile({
-    Key? key,
+    super.key,
     required this.item,
     required this.onRemove,
     required this.onAdd,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +54,7 @@ class CartTile extends StatelessWidget {
                 children: [
                   // Check if item.product is not null before accessing its properties
                   Text(
-                    item.product?.title ?? '',
+                    item.product.title,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -64,7 +63,7 @@ class CartTile extends StatelessWidget {
                   const SizedBox(height: 5),
                   // Check if item.product is not null before accessing its properties
                   Text(
-                    item.product?.category ?? '',
+                    item.product.category,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -74,7 +73,7 @@ class CartTile extends StatelessWidget {
                   const SizedBox(height: 10),
                   // Check if item.product is not null before accessing its properties
                   Text(
-                    "\$${item.product?.price ?? 0}",
+                    "\$${item.product.price}",
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:infantique/models/orders_model.dart';
 import 'package:infantique/models/product.dart';
-import 'package:infantique/screens/widgets/custom_app_bar.dart';
 
 class OrderDetailsScreen extends StatelessWidget {
   final String orderId;
@@ -24,12 +22,12 @@ class OrderDetailsScreen extends StatelessWidget {
         future: _orderService.fetchOrderWithDetails(orderId),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(
                 child: Text('Error fetching orders: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No orders available.'));
+            return const Center(child: Text('No orders available.'));
           } else {
             // Access the order details from the first order in the list
             MyOrder firstOrder = snapshot.data!.first;
@@ -47,7 +45,7 @@ class OrderDetailsScreen extends StatelessWidget {
                     Text(
                         'Total With Delivery: ${firstOrder.orderDetails['totalWithDelivery']}'),
 
-                    Divider(), // Add a divider between order details and product details
+                    const Divider(), // Add a divider between order details and product details
                     // Display details for each product in the order
                     for (MyOrder order in snapshot.data!) ...[
                       FutureBuilder<Product?>(
@@ -55,7 +53,7 @@ class OrderDetailsScreen extends StatelessWidget {
                         builder: (context, productSnapshot) {
                           if (productSnapshot.connectionState ==
                               ConnectionState.waiting) {
-                            return Center(child: CircularProgressIndicator());
+                            return const Center(child: CircularProgressIndicator());
                           } else if (productSnapshot.hasError) {
                             return Center(
                                 child: Text(
@@ -95,7 +93,7 @@ class OrderProductCard extends StatelessWidget {
       future: _productService.getProductById(productId),
       builder: (context, productSnapshot) {
         if (productSnapshot.connectionState == ConnectionState.waiting) {
-          return Center(child: CircularProgressIndicator());
+          return const Center(child: CircularProgressIndicator());
         } else if (productSnapshot.hasError) {
           return Center(
               child: Text(
@@ -106,8 +104,8 @@ class OrderProductCard extends StatelessWidget {
 
           // Use the product details in your card
           return Container(
-            padding: EdgeInsets.all(8),
-            margin: EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.all(8),
+            margin: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
@@ -116,7 +114,7 @@ class OrderProductCard extends StatelessWidget {
                   color: Colors.grey.withOpacity(0.2),
                   spreadRadius: 2,
                   blurRadius: 4,
-                  offset: Offset(0, 2),
+                  offset: const Offset(0, 2),
                 ),
               ],
             ),
@@ -133,22 +131,22 @@ class OrderProductCard extends StatelessWidget {
                     ),
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         product.title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         'Rs.${product.price.toString()}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                           color: Colors.grey,
@@ -156,7 +154,7 @@ class OrderProductCard extends StatelessWidget {
                       ),
                       Text(
                         'Qt.(${quantity.toString()})',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                           color: Colors.grey,

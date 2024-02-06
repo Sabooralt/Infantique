@@ -8,7 +8,7 @@ class ProductsContent extends StatelessWidget {
   final ProductService productService;
   final Function refreshProducts;
 
-  ProductsContent({required this.productService, required this.refreshProducts});
+  const ProductsContent({super.key, required this.productService, required this.refreshProducts});
 
 
   @override

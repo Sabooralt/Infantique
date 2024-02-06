@@ -1,18 +1,16 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:infantique/constants.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/product_screen.dart';
-import 'package:flutter/foundation.dart';
 import '../../models/RatingManager.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
   final RatingManager ratingManager;
 
-  const ProductCard({Key? key, required this.product, required this.ratingManager}) : super(key: key);
+  const ProductCard({super.key, required this.product, required this.ratingManager});
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +40,7 @@ class ProductCard extends StatelessWidget {
               padding: const EdgeInsets.all(10),
               child: Column(
                 children: [
-                  SizedBox(height: 150), // Ensure the text is below the image
+                  const SizedBox(height: 150), // Ensure the text is below the image
                   Text(
                     product.title,
                     maxLines: 1,

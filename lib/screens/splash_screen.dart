@@ -13,11 +13,11 @@ class _spscreenState extends State<spscreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => loginscreen(),
+          builder: (context) => const loginscreen(),
         ),
       );
     });
@@ -44,12 +44,12 @@ class _AnimatedTextLogoState extends State<AnimatedTextLogo> {
   Widget build(BuildContext context) {
     return TweenAnimationBuilder(
       tween: Tween<double>(begin: 0, end: 1),
-      duration: Duration(seconds: 2),
+      duration: const Duration(seconds: 2),
       builder: (context, double opacity, child) {
         return AnimatedOpacity(
           opacity: opacity,
-          duration: Duration(seconds: 1),
-          child: TextLogo(),
+          duration: const Duration(seconds: 1),
+          child: const TextLogo(),
         );
       },
     );
@@ -63,7 +63,7 @@ class TextLogo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.transparent, // Set the background color to transparent
-      child: Center(
+      child: const Center(
         child: Text(
           "infantique.",
           style: TextStyle(

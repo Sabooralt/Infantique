@@ -30,10 +30,10 @@ class Custom_Appbar extends StatelessWidget  implements PreferredSizeWidget{
     IconButton(
     icon: const Icon(Ionicons.cart_outline),
     onPressed: () {
-      CartScreen();
+      const CartScreen();
     },
     ),
-    SizedBox(width: kDefaultPaddin / 2)
+    const SizedBox(width: kDefaultPaddin / 2)
     ],
     );
   }

@@ -16,7 +16,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 
@@ -64,7 +64,7 @@ class Authentication extends StatelessWidget {
 
         builder: (context,snapshot){
           if (snapshot.connectionState == ConnectionState.active) {
-            User? user = snapshot.data as User?;
+            User? user = snapshot.data;
 
             return user == null ? const loginscreen() : const MyApp();
           }

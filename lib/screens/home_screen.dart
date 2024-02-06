@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:infantique/constants.dart';
-import 'package:infantique/models/RatingManager.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/allProducts.dart';
+import 'package:infantique/screens/widgets/SupportFloatingActionButton.dart';
 import 'package:infantique/widgets/categories.dart';
 import 'package:infantique/widgets/home_slider.dart';
 import 'package:infantique/widgets/product_card.dart';
@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: kscaffoldColor,
       body: SafeArea(
+
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -49,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       'Featured Products',
                       style: TextStyle(
                         fontSize: 22,
@@ -75,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       // Loading indicator while fetching data
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       // Error handling
                       return Text('Error: ${snapshot.error}');
@@ -108,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+      floatingActionButton: FloatingActionButtonWidget(),
     );
   }
 }

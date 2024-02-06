@@ -8,7 +8,7 @@ class ReviewForm extends StatefulWidget {
   final Function(Review) onSubmit;
   final String productId; // Add a field to store the productId
 
-  ReviewForm({
+  const ReviewForm({super.key,
     required this.onSubmit,
     required this.productId, // Include the productId in the constructor
   });
@@ -44,16 +44,16 @@ class _ReviewFormState extends State<ReviewForm> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Write a Review'),
+      title: const Text('Write a Review'),
       content: Column(
         children: [
           TextField(
             controller: _commentController,
-            decoration: InputDecoration(labelText: 'Your Comment'),
+            decoration: const InputDecoration(labelText: 'Your Comment'),
           ),
-          SizedBox(height: 20,),
-          Text('Rate Product:'),
-          SizedBox(height: 10,),
+          const SizedBox(height: 20,),
+          const Text('Rate Product:'),
+          const SizedBox(height: 10,),
           RatingBar.builder(
             initialRating: 0,
             minRating: 1,
@@ -78,7 +78,7 @@ class _ReviewFormState extends State<ReviewForm> {
           onPressed: () {
             Navigator.pop(context); // Close the review form dialog
           },
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
         ),
         TextButton(
           onPressed: () async {
@@ -107,18 +107,18 @@ class _ReviewFormState extends State<ReviewForm> {
 
             Navigator.pop(context); // Close the review form dialog
           },
-          child: Text('Submit'),
+          child: const Text('Submit'),
         ),
 
         // Display the error message on the UI
-        SizedBox(height: 10), // Adjust the height as needed
+        const SizedBox(height: 10), // Adjust the height as needed
         if (errorMessage.isNotEmpty)
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             color: Colors.red, // You can customize the color
             child: Text(
               errorMessage,
-              style: TextStyle(color: Colors.white), // You can customize the style
+              style: const TextStyle(color: Colors.white), // You can customize the style
             ),
           ),
       ],
@@ -165,7 +165,7 @@ class _ReviewFormState extends State<ReviewForm> {
     } catch (e) {
       print('Error saving review to Firestore: $e');
       // Rethrow the exception to handle it in the calling method
-      throw e;
+      rethrow;
     }
   }
 }

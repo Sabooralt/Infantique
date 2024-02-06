@@ -63,6 +63,8 @@ class ProductService {
   FirebaseFirestore.instance.collection('products');
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
+
   Future<List<Product>> getSearchedProducts({
     required String searchQuery,
   }) async {
@@ -124,8 +126,25 @@ class ProductService {
   }
 
 
-  Future<List<Product>> getProducts() async {
-    QuerySnapshot snapshot = await _productsCollection.get();
+  Future<List<Product>> getProducts({
+    String? orderBy,
+    bool descending = false,
+    String? category,
+  }) async {
+    Query productsQuery = _productsCollection;
+
+    // Apply sorting
+    if (orderBy != null) {
+      productsQuery = productsQuery.orderBy(orderBy, descending: descending);
+    }
+
+    // Apply filtering by category
+    if (category != null) {
+      productsQuery = productsQuery.where('category', isEqualTo: category);
+    }
+
+    QuerySnapshot snapshot = await productsQuery.get();
+
     return snapshot.docs.map((doc) => Product.fromFirestore(doc)).toList();
   }
 

@@ -5,8 +5,8 @@ import 'package:infantique/constants.dart';
 
 class SearchField extends StatelessWidget {
   const SearchField({
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class SearchField extends StatelessWidget {
               color: Colors.purpleAccent.withOpacity(0.5),
               spreadRadius: 3,
               blurRadius: 7,
-              offset: Offset(6.0, 7.0),
+              offset: const Offset(6.0, 7.0),
             ),
           ],
         ),

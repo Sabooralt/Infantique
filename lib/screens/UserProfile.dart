@@ -7,11 +7,14 @@ import 'package:infantique/controllers/user_settings_controller.dart';
 import 'package:infantique/models/orders_model.dart';
 import 'package:infantique/screens/OrderDetailsScreen.dart';
 import 'package:infantique/screens/login_screen.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:infantique/screens/main_screen.dart';
 import 'package:infantique/screens/user/change_password.dart';
+import 'package:infantique/screens/user/email_verification.dart';
+import 'package:infantique/screens/widgets/SupportFloatingActionButton.dart';
+import 'package:ionicons/ionicons.dart';
 
 class UserProfile extends StatefulWidget {
+  const UserProfile({super.key});
+
   @override
   _UserProfileState createState() => _UserProfileState();
 }
@@ -21,6 +24,7 @@ class _UserProfileState extends State<UserProfile> {
   List<Map<String, dynamic>> paymentMethods = [];
   final FirebaseAuth auth = FirebaseAuth.instance;
   OrderService orderService = OrderService();
+  User? user = FirebaseAuth.instance.currentUser;
 
   String getCurrentUserId() {
     User? user = FirebaseAuth.instance.currentUser;
@@ -45,19 +49,19 @@ class _UserProfileState extends State<UserProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('User Profile'),
+        title: const Text('User Profile'),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Delivery Addresses Section
-            SectionTitle('Delivery Addresses'),
+            const SectionTitle('Delivery Addresses'),
 
             ListTile(
-              title: Text('Add Delivery Address'),
-              leading: Icon(Icons.add),
+              title: const Text('Add Delivery Address'),
+              leading: const Icon(Icons.add),
               onTap: () {
                 User_Settings_Controller.showAddAddressDialog(context,
                     (newAddress) async {
@@ -87,7 +91,7 @@ class _UserProfileState extends State<UserProfile> {
                   ),
               ],
             ),
-          SectionTitle('Orders'),
+          const SectionTitle('Orders'),
     Column(children: [
               FutureBuilder<List<MyOrder>>(
                   future: fetchOrders(),
@@ -95,7 +99,7 @@ class _UserProfileState extends State<UserProfile> {
 
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       // Show loading indicator while fetching orders
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
                       // Handle error if fetching orders fails
                       return Center(
@@ -103,7 +107,7 @@ class _UserProfileState extends State<UserProfile> {
                               Text('Error fetching orders: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                       // Show a message if there are no orders
-                      return Center(child: Text('No orders available.'));
+                      return const Center(child: Text('No orders available.'));
                     } else {
                       // Create a list of OrderCard widgets
                       List<Widget> orderCards = snapshot.data!.map((order) {
@@ -146,21 +150,23 @@ class _UserProfileState extends State<UserProfile> {
             // Orders Section
 
             // Profile Settings Section
-            SectionTitle('Profile Settings'),
+            const SectionTitle('Profile Settings'),
+
             ListTile(
-              title: Text('Edit Profile'),
-              leading: Icon(Icons.person),
+              title: const Text('Edit Profile'),
+              leading: const Icon(Ionicons.person,color: Colors.black,),
               onTap: () {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EditProfileScreen(),
+                      builder: (context) => const EditProfileScreen(),
                     ));
               },
             ),
             ListTile(
-              title: Text('Change Password'),
-              leading: Icon(Icons.lock),
+              title: const Text('Change Password'),
+              leading: const Icon(Ionicons.lock_closed,
+              color: Colors.black,),
               onTap: () {
                 Navigator.push(
                     context,
@@ -169,12 +175,31 @@ class _UserProfileState extends State<UserProfile> {
                     ));
               },
             ),
+            ...[
+          if (user?.emailVerified == false)
+        ListTile(
+        title: const Text('Verify Email'),
+    leading: const Icon(Ionicons.mail,
+    color: Colors.black,),
+    onTap: () {
+    Navigator.push(
+    context,
+    MaterialPageRoute(
+    builder: (context) => EmailVerificationScreen(),
+    ),
+    );
+    },
+    ),
+          ],
+
+
+
 
             // Payment Methods Section
-            SectionTitle('Payment Methods'),
+            const SectionTitle('Payment Methods'),
             ListTile(
-              title: Text('Add Payment Method'),
-              leading: Icon(Icons.add),
+              title: const Text('Add Payment Method'),
+              leading: const Icon(Icons.add),
               onTap: () {
                 PaymentController.showAddPaymentMethodDialog(context,
                     (newPaymentMethod) async {
@@ -191,7 +216,7 @@ class _UserProfileState extends State<UserProfile> {
 
                   // Optionally, you can display a SnackBar or perform other UI updates
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
+                    const SnackBar(
                       content: Text('Payment method added successfully!'),
                     ),
                   );
@@ -216,17 +241,17 @@ class _UserProfileState extends State<UserProfile> {
             ),
 
             // Logout Section
-            SectionTitle('Logout'),
+            const SectionTitle('Logout'),
             ListTile(
-              title: Text('Logout'),
-              leading: Icon(Icons.exit_to_app),
+              title: const Text('Logout'),
+              leading: const Icon(Icons.exit_to_app),
               onTap: () async {
                 // Show loading indicator with "Logging Out..." text
                 showDialog(
                   context: context,
                   barrierDismissible: false,
                   builder: (BuildContext context) {
-                    return AlertDialog(
+                    return const AlertDialog(
                       content: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -241,7 +266,7 @@ class _UserProfileState extends State<UserProfile> {
 
                 try {
                   // Delay for 2 seconds
-                  await Future.delayed(Duration(seconds: 2));
+                  await Future.delayed(const Duration(seconds: 2));
 
                   // Sign out
                   await UserController.signOut();
@@ -263,6 +288,7 @@ class _UserProfileState extends State<UserProfile> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButtonWidget(),
     );
 
   }
@@ -380,7 +406,7 @@ class _UserProfileState extends State<UserProfile> {
 class SectionTitle extends StatelessWidget {
   final String title;
 
-  SectionTitle(this.title);
+  const SectionTitle(this.title, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -388,7 +414,7 @@ class SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Text(
         title,
-        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       ),
     );
   }
@@ -400,8 +426,8 @@ class DeliveryAddressCard extends StatelessWidget {
   final String documentId;
   final Function(String) onDelete;
 
-  DeliveryAddressCard(
-      {required this.name,
+  const DeliveryAddressCard(
+      {super.key, required this.name,
       required this.address,
       required this.documentId,
       required this.onDelete});
@@ -410,27 +436,27 @@ class DeliveryAddressCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2.0,
-      margin: EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(
         title: Text(name),
         subtitle: Text(address),
         trailing: IconButton(
-          icon: Icon(Icons.delete),
+          icon: const Icon(Icons.delete,color: Colors.black,),
           onPressed: () {
             // Show a confirmation dialog before deleting
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Delete Delivery Address'),
-                  content: Text(
+                  title: const Text('Delete Delivery Address'),
+                  content: const Text(
                       'Are you sure you want to delete this delivery address?'),
                   actions: [
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context); // Close the dialog
                       },
-                      child: Text('Cancel'),
+                      child: const Text('Cancel'),
                     ),
                     TextButton(
                       onPressed: () async {
@@ -443,7 +469,7 @@ class DeliveryAddressCard extends StatelessWidget {
 
                         // Optionally, you can display a SnackBar or perform other UI updates
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content:
                                 Text('Delivery address deleted successfully!'),
                           ),
@@ -451,7 +477,7 @@ class DeliveryAddressCard extends StatelessWidget {
 
                         Navigator.pop(context); // Close the confirmation dialog
                       },
-                      child: Text('Delete'),
+                      child: const Text('Delete'),
                     ),
                   ],
                 );
@@ -471,7 +497,7 @@ class OrderCard extends StatelessWidget {
 
   final VoidCallback onTap;
 
-  OrderCard({
+  const OrderCard({super.key,
     required this.orderId,
     required this.orderNumber,
     required this.status,
@@ -484,11 +510,12 @@ class OrderCard extends StatelessWidget {
       onTap: onTap,
       child: Card(
         elevation: 2.0,
-        margin: EdgeInsets.symmetric(vertical: 8.0),
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
         child: ListTile(
-          title: Text('$orderNumber'),
+          title: Text(orderNumber),
           subtitle: Text('Status: $status'),
-          trailing: Icon(Icons.info),
+          trailing: const Icon(Ionicons.information_circle_sharp,
+          color: Colors.black,),
         ),
       ),
     );
@@ -501,7 +528,7 @@ class PaymentMethodCard extends StatelessWidget {
   final String documentId; // Document ID from Firestore
   final Function(String) onDelete;
 
-  PaymentMethodCard({
+  const PaymentMethodCard({super.key,
     required this.cardInfo,
     required this.documentId,
     required this.onDelete,
@@ -511,26 +538,26 @@ class PaymentMethodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2.0,
-      margin: EdgeInsets.symmetric(vertical: 8.0),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(
         title: Text(cardInfo),
         trailing: IconButton(
-          icon: Icon(Icons.delete),
+          icon: const Icon(Icons.delete, color: Colors.black,),
           onPressed: () {
             // Show a confirmation dialog before deleting
             showDialog(
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Delete Payment Method'),
-                  content: Text(
+                  title: const Text('Delete Payment Method'),
+                  content: const Text(
                       'Are you sure you want to delete this payment method?'),
                   actions: [
                     TextButton(
                       onPressed: () {
                         Navigator.pop(context); // Close the dialog
                       },
-                      child: Text('Cancel'),
+                      child: const Text('Cancel'),
                     ),
                     TextButton(
                       onPressed: () async {
@@ -540,7 +567,7 @@ class PaymentMethodCard extends StatelessWidget {
 
                         // Optionally, you can display a SnackBar or perform other UI updates
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
+                          const SnackBar(
                             content:
                                 Text('Payment method deleted successfully!'),
                           ),
@@ -550,7 +577,7 @@ class PaymentMethodCard extends StatelessWidget {
                             documentId); // Notify the parent about the deletion
                         Navigator.pop(context); // Close the confirmation dialog
                       },
-                      child: Text('Delete'),
+                      child: const Text('Delete'),
                     ),
                   ],
                 );

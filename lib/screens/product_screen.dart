@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:infantique/models/cart_provider.dart';
 import 'package:infantique/models/userDetails.dart';
+import 'package:infantique/screens/widgets/SupportFloatingActionButton.dart';
 import 'package:infantique/screens/widgets/product_widgets/appbar.dart';
 import 'package:infantique/screens/widgets/product_widgets/information.dart';
 import 'package:infantique/screens/widgets/product_widgets/product_desc.dart';
@@ -505,6 +506,7 @@ class _ProductScreenState extends State<ProductScreen> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButtonWidget(),
     );
 
 

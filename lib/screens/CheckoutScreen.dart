@@ -4,9 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:infantique/controllers/user_settings_controller.dart';
 import 'package:infantique/models/cart_item.dart';
-import 'package:infantique/screens/UserProfile.dart';
 import 'package:infantique/screens/main_screen.dart';
 import 'package:infantique/screens/widgets/check_out_box.dart';
 import 'package:infantique/screens/widgets/product_widgets/CheckoutProductCard.dart';
@@ -23,7 +21,7 @@ class CheckoutScreen extends StatefulWidget {
   List<int> quantities = [];
 
   // Constructor that takes a Product parameter
-  CheckoutScreen({this.singleProduct});
+  CheckoutScreen({super.key, this.singleProduct});
 
   @override
   State<CheckoutScreen> createState() => _CheckoutScreenState();
@@ -166,7 +164,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     future: fetchUserDetails(),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else if (snapshot.hasData) {
@@ -179,14 +177,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         return Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
+                            const Text(
                               'Delivery Address',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             if (deliveryAddress != null)
                               InkWell(
                                 onTap: () {
@@ -205,7 +203,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                     children: [
                                       Text(
                                         'Name: ${deliveryAddress['name']}',
-                                        style: TextStyle(
+                                        style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
                                       Text(
@@ -216,16 +214,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 ),
                               )
                             else
-                              Text('No delivery address available.'),
-                            SizedBox(height: 20),
-                            Text(
+                              const Text('No delivery address available.'),
+                            const SizedBox(height: 20),
+                            const Text(
                               'Payment Methods',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             if (paymentMethods.isNotEmpty)
                               Column(
                                 children: paymentMethods.map((paymentMethod) {
@@ -243,7 +241,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                       children: [
                                         Text(
                                           'Card Number: ${paymentMethod['cardNumber']}',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontWeight: FontWeight.bold),
                                         ),
                                       ],
@@ -252,11 +250,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                 }).toList(),
                               )
                             else
-                              Text('No payment methods available.'),
+                              const Text('No payment methods available.'),
                           ],
                         );
                       } else {
-                        return Text('No user details available.');
+                        return const Text('No user details available.');
                       }
                     },
                   ),
@@ -273,7 +271,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         border: Border.all(color: Colors.purple, width: 2),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 10),
+                      padding: const EdgeInsets.symmetric(vertical: 10),
                       child: Column(
                         children: [
                           const Text(
@@ -303,7 +301,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           alignment: Alignment.center,
           child:  Consumer<CartProvider>(
         builder: (context, cartProvider, child) {
-          List<CartItem> cartItems = cartProvider.cartItems;
           final CheckOutBox checkOutBox = CheckOutBox(items: cartProvider.cartItems);
           return ElevatedButton(
             onPressed: () async {
@@ -319,7 +316,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 EasyLoading.showSuccess('Order Placed Successfully!');
 
                 // Wait for a short duration to display the success message
-                await Future.delayed(Duration(seconds: 2));
+                await Future.delayed(const Duration(seconds: 2));
 
                 Map<String, dynamic> userDetails = await fetchUserDetails();
                 String userDeliveryAddress = userDetails['deliveryAddress']['address'] ?? '';
@@ -337,7 +334,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MainScreen(),
+                    builder: (context) => const MainScreen(),
                   ),
                 );
               }catch(e){
@@ -345,6 +342,11 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               }
 
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: kprimaryColor,
+              minimumSize: const Size(double.infinity, 55),
+              // Adjust the width and height as needed
+            ),
             child: const Text(
               'Place Order',
               style: TextStyle(
@@ -352,11 +354,6 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
-            ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kprimaryColor,
-              minimumSize: const Size(double.infinity, 55),
-              // Adjust the width and height as needed
             ),
           );
         }

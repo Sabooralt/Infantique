@@ -3,17 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:infantique/screens/user/email_verification.dart';
 
 class EmailVerificationSnackbar extends StatefulWidget {
+  const EmailVerificationSnackbar({super.key});
+
   @override
   _EmailVerificationSnackbarState createState() => _EmailVerificationSnackbarState();
 }
 
 class _EmailVerificationSnackbarState extends State<EmailVerificationSnackbar> {
   final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
   @override
   void initState() {
     super.initState();
-    // Delay the execution of checkEmailVerificationStatus by 2 seconds
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(const Duration(seconds: 5), () {
       checkEmailVerificationStatus();
     });
   }
@@ -25,43 +27,34 @@ class _EmailVerificationSnackbarState extends State<EmailVerificationSnackbar> {
       // If the email is not verified, show a Snackbar message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Row(
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Please verify your email.'),
-              const SizedBox(width: 8.0),
+              const Text('Please verify your email.'),
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => EmailVerificationScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => EmailVerificationScreen(),
+                    ),
                   );
                 },
-                child: Text('Verify Email'),
+                child: const Text('Verify Email'),
               ),
             ],
           ),
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16.0), // Adjust the margin as needed
           action: SnackBarAction(
-            label: 'Close',
+            label: '',
             onPressed: () {
               ScaffoldMessenger.of(context).hideCurrentSnackBar();
             },
           ),
         ),
       );
-    }
-  }
-
-  Future<void> sendVerificationEmail() async {
-    User? user = FirebaseAuth.instance.currentUser;
-
-    if (user != null) {
-      try {
-        await user.sendEmailVerification();
-        // Email sent successfully
-      } catch (e) {
-        // Handle errors
-        print('Error sending verification email: $e');
-      }
     }
   }
 

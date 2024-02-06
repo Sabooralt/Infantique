@@ -7,9 +7,9 @@ import '../screens/CheckoutScreen.dart';
 class CheckOutBox extends StatelessWidget {
   final List<CartItem> items;
   const CheckOutBox({
-    Key? key,
+    super.key,
     required this.items,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

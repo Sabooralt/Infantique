@@ -11,23 +11,23 @@ class AdminSidebar extends StatelessWidget {
       child: ListView(
         children: [
           ListTile(
-            title: Text('Users'),
+            title: const Text('Users'),
             onTap: () => onSectionSelected('Users'),
           ),
           ListTile(
-            title: Text('Products'),
+            title: const Text('Products'),
             onTap: () => onSectionSelected('Products'),
           ),
           ListTile(
-            title: Text('Orders'),
+            title: const Text('Orders'),
             onTap: () => onSectionSelected('Orders'),
           ),
           ListTile(
-            title: Text('Sellers'),
+            title: const Text('Sellers'),
             onTap: () => onSectionSelected('Sellers'),
           ),
           ListTile(
-            title: Text('User Feedback'),
+            title: const Text('User Feedback'),
             onTap: () => onSectionSelected('User Feedback'),
           ),
         ],

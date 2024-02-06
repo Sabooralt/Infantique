@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:infantique/models/product.dart';
-import 'package:infantique/screens/sellers/sellerWidgets/AddProduct.dart';
 import 'package:infantique/widgets/Admin_Widgets/AdminSidebar.dart';
 import 'package:infantique/widgets/Admin_Widgets/Orders.dart';
 import 'package:infantique/widgets/Admin_Widgets/ProductsContent.dart';
 import 'package:infantique/widgets/Admin_Widgets/Sellers.dart';
+import 'package:infantique/widgets/Admin_Widgets/UserSupport.dart';
 import 'package:infantique/widgets/Admin_Widgets/UsersContent.dart';
 
 class AdminPanelPage extends StatefulWidget {
+  const AdminPanelPage({super.key});
+
   @override
   _AdminPanelPageState createState() => _AdminPanelPageState();
 }
@@ -15,6 +17,7 @@ class AdminPanelPage extends StatefulWidget {
 class _AdminPanelPageState extends State<AdminPanelPage> {
   String selectedSection = 'Users'; // Default selected section
   final ProductService productService = ProductService();
+  String appBarTitle = 'Admin Panel';
 
 
   Future<void> _refreshProducts() async {
@@ -26,7 +29,7 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Admin Panel'),
+        title: Text(appBarTitle),
       ),
       drawer: AdminSidebar(
         onSectionSelected: (section) {
@@ -48,18 +51,26 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
   Widget getContent(String section) {
     switch (section) {
       case 'Orders':
+        appBarTitle = 'Orders';
         return OrdersScreen();
       case 'Sellers':
-        return Sellers();
+        appBarTitle = 'Sellers';
+        return const Sellers();
       case 'Users':
-        return UsersContent();
+        appBarTitle = 'Users';
+        return const UsersContent();
       case 'Products':
+        appBarTitle = 'Products';
         return ProductsContent(
           productService: productService,
           refreshProducts: _refreshProducts,
         );
+      case 'User Feedback':
+        appBarTitle = 'User Feedback';
+        return const AdminUserSupport();
       default:
-        return Text('Select a section from the sidebar');
+        appBarTitle = 'Admin Panel';
+        return const Text('Select a section from the sidebar');
     }
   }
 }

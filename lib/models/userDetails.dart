@@ -35,8 +35,4 @@ Future<UserDetails> fetchUserDetails(String userId) async {
     );
   }
 }
-class UserService{
-
-
-}
 

@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:infantique/models/cart_provider.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:infantique/constants.dart';
 import 'package:infantique/models/cart_item.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +33,6 @@ class _CartTileState extends State<CartTile> {
   @override
 
   Widget build(BuildContext context){
-    CartProvider cartProvider = Provider.of<CartProvider>(context);
         return  Consumer<CartProvider>(
           builder: (context, cartProvider, child) => Stack(
             children: [
@@ -61,7 +58,7 @@ class _CartTileState extends State<CartTile> {
                         widget.item.product.images[0],
                         fit: BoxFit.cover,
                       )
-                          : Placeholder(), // You can replace this with your placeholder widget
+                          : const Placeholder(), // You can replace this with your placeholder widget
                     ),
                     const SizedBox(width: 10),
                     Column(

@@ -2,17 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:infantique/constants.dart';
 import 'package:infantique/models/cart_provider.dart';
-import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/widgets/custom_app_bar.dart';
 import 'package:infantique/widgets/cart_tile.dart';
 import 'package:infantique/widgets/check_out_box.dart';
-import 'package:ionicons/ionicons.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:infantique/models/cart_item.dart';
 import 'package:provider/provider.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({Key? key}) : super(key: key);
+  const CartScreen({super.key});
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -34,7 +30,7 @@ class _CartScreenState extends State<CartScreen> {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
         backgroundColor: kcontentColor,
-       appBar: Custom_Appbar( title: Text('My Cart'),),
+       appBar: Custom_Appbar( title: const Text('My Cart'),),
         bottomSheet: Visibility(
           visible: cartProvider.cartItems.isNotEmpty,
           child: CheckOutBox(
@@ -74,8 +70,8 @@ class _CartScreenState extends State<CartScreen> {
     if (index >= 0 && index < cartProvider.cartItems.length) {
       // Call the deleteCartItem function from CartProvider
       cartProvider.deleteCartItem(cartProvider.cartItems[index]);
-      Future.delayed(Duration(milliseconds: 300), () {
-        EasyLoading.showToast(duration: Duration(milliseconds: 1200),'Item deleted successfully!', dismissOnTap: true, );
+      Future.delayed(const Duration(milliseconds: 300), () {
+        EasyLoading.showToast(duration: const Duration(milliseconds: 1200),'Item deleted successfully!', dismissOnTap: true, );
       });
 
     }
