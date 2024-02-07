@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:infantique/controllers/ProductFilter.dart';
 import 'package:infantique/models/SortingFunctions.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/widgets/SupportFloatingActionButton.dart';
@@ -8,7 +9,28 @@ import 'package:infantique/screens/widgets/filterButtons.dart';
 import 'package:infantique/widgets/product_card.dart';
 
 class AllProductsScreen extends StatefulWidget {
-  const AllProductsScreen({super.key});
+  final List<Product>? initialProducts;
+
+  static void navigateToAllProductsScreenAndFilterByCategory(
+      BuildContext context, String category) async {
+    List<Product> filteredProducts =
+        await ProductFilter().getProductsByCategory(category);
+    if (filteredProducts.isNotEmpty) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AllProductsScreen(
+            initialProducts: filteredProducts,
+          ),
+        ),
+      );
+    } else {
+      // Show a message indicating no products are available for the selected category
+      EasyLoading.showToast('No products available for $category');
+    }
+  }
+
+  const AllProductsScreen({Key? key, this.initialProducts}) : super(key: key);
 
   @override
   _AllProductsScreenState createState() => _AllProductsScreenState();
@@ -26,7 +48,11 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
   @override
   void initState() {
     super.initState();
-    fetchData();
+    if (widget.initialProducts != null) {
+      allProducts = widget.initialProducts!;
+    } else {
+      fetchData();
+    }
   }
 
   Future<void> fetchData() async {
@@ -56,10 +82,9 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("Initial allProducts state: $allProducts");
     return Scaffold(
       appBar: Custom_Appbar(
-        title: const Text(''),
+        title: 'All Products',
       ),
       body: isLoading
           ? const Center(
@@ -91,8 +116,6 @@ class _AllProductsScreenState extends State<AllProductsScreen> {
                         ),
                         itemCount: allProducts.length,
                         itemBuilder: (context, index) {
-                          print(
-                              "Building item $index: ${allProducts[index].price}");
                           return ProductCard(
                             product: allProducts[index],
                           );

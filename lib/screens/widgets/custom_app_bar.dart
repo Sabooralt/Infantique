@@ -5,27 +5,38 @@ import 'package:infantique/screens/search_screens/Search_Screen.dart';
 import 'package:ionicons/ionicons.dart';
 
 class Custom_Appbar extends StatelessWidget  implements PreferredSizeWidget{
-  final Widget title;
+  final String title;
 
   Custom_Appbar({required this.title});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: title,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 18,
+        ),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 0,
+      leading: IconButton(
         icon: const Icon(Ionicons.arrow_back),
+        onPressed: () {
+          Navigator.pop(context);
+        },
+      ),
+      actions: <Widget>[
+        IconButton(
+          icon: const Icon(Ionicons.search_outline),
     onPressed: () {
-    },
-    ),
-    actions: <Widget>[
-    IconButton(
-    icon: const Icon(Ionicons.search_outline),
-    onPressed: () {
-      SearchScreen();
-    },
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SearchScreen(),
+              ),
+            );
+          },
     ),
     IconButton(
     icon: const Icon(Ionicons.cart_outline),

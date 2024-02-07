@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:infantique/constants.dart';
 import 'package:infantique/screens/search_screens/Search_Screen.dart';
 import 'package:ionicons/ionicons.dart';
-import 'package:infantique/constants.dart';
 
 class SearchField extends StatelessWidget {
   const SearchField({
@@ -43,9 +43,15 @@ class SearchField extends StatelessWidget {
               color: Colors.grey,
             ),
             const SizedBox(width: 10),
-            const Flexible(
+            Flexible(
               flex: 4,
               child: TextField(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SearchScreen()),
+                  );
+                },
                 decoration: InputDecoration(
                   hintText: "Search...",
                   border: InputBorder.none,

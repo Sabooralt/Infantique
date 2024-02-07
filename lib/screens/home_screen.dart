@@ -3,11 +3,11 @@ import 'package:infantique/constants.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/allProducts.dart';
 import 'package:infantique/screens/widgets/SupportFloatingActionButton.dart';
+import 'package:infantique/widgets/Email_Verifaction_Widget.dart';
 import 'package:infantique/widgets/categories.dart';
 import 'package:infantique/widgets/home_slider.dart';
 import 'package:infantique/widgets/product_card.dart';
 import 'package:infantique/widgets/search_field.dart';
-import 'package:infantique/widgets/Email_Verifaction_Widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 10),
                 FutureBuilder<List<Product>>(
-                  future: productService.getProducts(),
+                  future: productService.getRandomProducts(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       // Loading indicator while fetching data
@@ -87,12 +87,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       return GridView.builder(
                         physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          childAspectRatio: 0.75,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          crossAxisSpacing: 20,
-                          mainAxisSpacing: 20,
+                          childAspectRatio: 1.0,
+                          crossAxisSpacing: 0.0,
+                          mainAxisSpacing: 5,
+                          mainAxisExtent: 264,
                         ),
                         itemCount: products.length,
                         itemBuilder: (context, index) {

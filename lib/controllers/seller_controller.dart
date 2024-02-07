@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class SellerAuthController {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -38,23 +39,16 @@ class SellerAuthController {
     }
   }
 
-  Future<Seller> getSellerInfo(String uid) async {
+  Future<List<Map<String, dynamic>>> fetchSellers() async {
     try {
-      DocumentSnapshot sellerSnapshot =
-          await _firestore.collection('sellers').doc(uid).get();
-      if (sellerSnapshot.exists) {
-        // Create a Seller object using the data from Firestore
-        return Seller(
-          id: uid,
-          name: sellerSnapshot['name'],
-          // Add more fields as needed
-        );
-      } else {
-        throw 'Seller not found';
-      }
+      QuerySnapshot querySnapshot =
+          await _firestore.collection('sellers').get();
+      return querySnapshot.docs
+          .map((DocumentSnapshot doc) => doc.data() as Map<String, dynamic>)
+          .toList();
     } catch (e) {
-      print('Error fetching seller information: $e');
-      rethrow;
+      EasyLoading.showToast('Error fetching sellers: $e');
+      return []; // Return an empty list if an error occurs
     }
   }
 

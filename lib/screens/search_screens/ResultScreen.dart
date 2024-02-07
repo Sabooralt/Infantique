@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:infantique/models/RatingManager.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/widgets/custom_app_bar.dart';
 import 'package:infantique/widgets/product_card.dart';
@@ -59,7 +58,7 @@ class _ResultsScreenState extends State<ResultsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Custom_Appbar(title: Text('Search Results For : $searchResults')),
+      appBar: Custom_Appbar(title: 'Search Results'),
       body: SafeArea(
           child: SingleChildScrollView(
         child: Padding(
@@ -69,11 +68,12 @@ class _ResultsScreenState extends State<ResultsScreen> {
               GridView.builder(
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  childAspectRatio: 0.75,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
+                  childAspectRatio: 1.0,
+                  crossAxisSpacing: 0.0,
+                  mainAxisSpacing: 5,
+                  mainAxisExtent: 264,
                 ),
                 itemCount: searchResults.length,
                 itemBuilder: (context, index) {

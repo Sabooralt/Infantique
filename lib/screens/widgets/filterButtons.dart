@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:infantique/constants.dart';
 import 'package:infantique/controllers/ProductFilter.dart';
-import 'package:infantique/models/SortingFunctions.dart';
 import 'package:infantique/models/product.dart';
 import 'package:ionicons/ionicons.dart';
 
@@ -105,7 +104,7 @@ class _filterProductsState extends State<filterProducts> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     alignment: Alignment.centerLeft,
                   ),
-                  onPressed: (){
+                  onPressed: () {
                     _showCategoryOptions(context);
                   },
                   child: const Text(
@@ -130,7 +129,7 @@ class _filterProductsState extends State<filterProducts> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     alignment: Alignment.centerLeft,
                   ),
-                  onPressed: (){
+                  onPressed: () {
                     _resetSelection();
                     EasyLoading.showToast('Filters reset successfully');
                   },
@@ -167,12 +166,12 @@ class _filterProductsState extends State<filterProducts> {
                   ListTile(
                     title: Row(
                       children: [
-
-
                         Text(category),
-                        SizedBox(width: 5,),
+                        SizedBox(
+                          width: 5,
+                        ),
                         if (category == selectedCategory)
-                        Icon(Icons.check, color: kprimaryColor),
+                          Icon(Icons.check, color: kprimaryColor),
                       ],
                     ),
                     onTap: () async {
@@ -183,7 +182,8 @@ class _filterProductsState extends State<filterProducts> {
                         widget.updateUI(filteredProducts);
                       } else {
                         // Show a message indicating no products are available for the selected category
-                        EasyLoading.showToast('No products available for $category');
+                        EasyLoading.showToast(
+                            'No products available for $category');
                       }
 
                       // Update selectedCategory when a category is tapped
@@ -214,30 +214,31 @@ class _filterProductsState extends State<filterProducts> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: const Text('Price High To Low'),
-          onTap: () async {
-            List<Product> sortedProducts = await productService.getProducts(
-              orderBy: 'price',
-              descending: true,
-            );
+                  title: const Text('Price High To Low'),
+                  onTap: () async {
+                    List<Product> sortedProducts =
+                        await productService.getProducts(
+                      orderBy: 'price',
+                      descending: true,
+                    );
 
-            widget.updateUI(sortedProducts);
-            Navigator.pop(context);
-            EasyLoading.showToast('Products filtered by High To Low!', duration: Duration(milliseconds: 800));
-
-          }
-              ),
+                    widget.updateUI(sortedProducts);
+                    Navigator.pop(context);
+                    EasyLoading.showToast('Products filtered by High To Low!',
+                        duration: Duration(milliseconds: 800));
+                  }),
               ListTile(
                 title: const Text('Price Low To High'),
                 onTap: () async {
-                  List<Product> sortedProducts = await productService.getProducts(
+                  List<Product> sortedProducts =
+                      await productService.getProducts(
                     orderBy: 'price',
                     descending: false,
                   );
                   widget.updateUI(sortedProducts);
                   Navigator.pop(context);
-                  EasyLoading.showToast('Products filtered by Low To High!', duration: Duration(milliseconds: 800));
-
+                  EasyLoading.showToast('Products filtered by Low To High!',
+                      duration: Duration(milliseconds: 800));
                 },
               ),
               ListTile(
@@ -253,11 +254,16 @@ class _filterProductsState extends State<filterProducts> {
       },
     );
   }
+
   void _resetSelection() {
     setState(() {
       selectedCategory = null;
     });
+
+    // Reset other data or UI elements as needed
+
+    // Reset other filters or settings (modify this part based on your specific logic)
     List<Product> originalProducts = widget.allProducts;
     widget.updateUI(originalProducts);
   }
-  }
+}

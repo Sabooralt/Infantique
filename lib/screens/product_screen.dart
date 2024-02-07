@@ -40,8 +40,6 @@ class _ProductScreenState extends State<ProductScreen> {
   Map<String, String> userDeliveryAddress = {};
   String? selectedDeliveryAddress;
   List<Review>? productReviews;
-  double averageRating = 4.5;
-  int totalReviews = 15;
 
 
 

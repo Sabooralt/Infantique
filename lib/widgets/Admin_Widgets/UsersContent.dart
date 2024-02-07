@@ -71,7 +71,7 @@ class _UsersContentState extends State<UsersContent> {
         Map<String, dynamic> data = doc.data();
         return MyAppUser(
           uid: doc.id,
-          displayName: data['name'] ?? '',
+          displayName: data['displayName'] ?? '',
           email: data['email'] ?? '',
         );
       }).toList();
@@ -124,30 +124,31 @@ class _UsersContentState extends State<UsersContent> {
                   itemBuilder: (context, index) {
                     MyAppUser user = users[index];
 
-                    return Card(
-                      child: ListTile(
-                        title: Text(user.displayName),
-                        subtitle: Text(user.email),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                _disableUser(user.uid);
-                                _showSnackbar('User disabled successfully', true);
-                              },
-                              child: const Text('Disable'),
-                            ),
-                            const SizedBox(width: 8),
-                            ElevatedButton(
-                              onPressed: () {
-                                _deleteUser(user.uid);
-                                _showSnackbar('User deleted successfully', true);
-                              },
-                              child: const Text('Delete'),
-                            ),
-                          ],
-                        ),
+                    return ListTile(
+                      title: Text(
+                        user.displayName,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Text(user.email),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.block),
+                            onPressed: () {
+                              _disableUser(user.uid);
+                              _showSnackbar('User disabled successfully', true);
+                            },
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () {
+                              _deleteUser(user.uid);
+                              _showSnackbar('User deleted successfully', true);
+                            },
+                          ),
+                        ],
                       ),
                     );
                   },

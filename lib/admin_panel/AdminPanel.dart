@@ -55,7 +55,7 @@ class _AdminPanelPageState extends State<AdminPanelPage> {
         return OrdersScreen();
       case 'Sellers':
         appBarTitle = 'Sellers';
-        return const Sellers();
+        return Sellers();
       case 'Users':
         appBarTitle = 'Users';
         return const UsersContent();

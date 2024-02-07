@@ -30,7 +30,7 @@ class _CartScreenState extends State<CartScreen> {
     CartProvider cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
         backgroundColor: kcontentColor,
-       appBar: Custom_Appbar( title: const Text('My Cart'),),
+        appBar: Custom_Appbar(title: 'My Cart'),
         bottomSheet: Visibility(
           visible: cartProvider.cartItems.isNotEmpty,
           child: CheckOutBox(

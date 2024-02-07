@@ -1,9 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:infantique/models/RatingManager.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:infantique/constants.dart';
+import 'package:infantique/models/RatingManager.dart';
 import 'package:infantique/models/product.dart';
+import 'package:ionicons/ionicons.dart';
 
 class ProductInfo extends StatefulWidget {
   final Product product;
@@ -29,19 +28,18 @@ class _ProductInfoState extends State<ProductInfo> {
   Future<void> _loadAverageRatingAndSellerName() async {
     try {
       RatingManager ratingManager = RatingManager();
-      double rating = await ratingManager.getAverageRating(widget.product.id);
       int reviewsCount = await ratingManager.getReviewsCount(widget.product.id);
 
       ProductService productService = ProductService();
-      String sellerName = await productService.fetchSellerName(widget.product.sellerId);
+      String sellerName =
+          await productService.fetchSellerName(widget.product.sellerId);
 
       setState(() {
-        averageRating = rating;
         totalReviews = reviewsCount;
         this.sellerName = sellerName;
       });
 
-      print('$averageRating , $totalReviews, $sellerName');
+      print('$totalReviews, $sellerName');
     } catch (e) {
       print('Error loading average rating and seller name: $e');
     }
@@ -97,7 +95,8 @@ class _ProductInfoState extends State<ProductInfo> {
                             ),
                             const SizedBox(width: 3),
                             Text(
-                              '$averageRating / 5', // Display average rating
+                              '${widget.product.averageRating} / 5',
+                              // Display average rating
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 13,

@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:infantique/models/reviews.dart';
-import 'package:infantique/models/userDetails.dart';
+import 'package:velocity_x/velocity_x.dart';
 
 class Product {
   final String id;
@@ -125,13 +128,15 @@ class ProductService {
     }
   }
 
+// Import the math library for random number generation
 
-  Future<List<Product>> getProducts({
+  Future<List<Product>> getRandomProducts({
     String? orderBy,
     bool descending = false,
     String? category,
   }) async {
     Query productsQuery = _productsCollection;
+    EasyLoading.show();
 
     // Apply sorting
     if (orderBy != null) {
@@ -143,8 +148,48 @@ class ProductService {
       productsQuery = productsQuery.where('category', isEqualTo: category);
     }
 
+    // Retrieve all products
     QuerySnapshot snapshot = await productsQuery.get();
+    List<Product> allProducts =
+        snapshot.docs.map((doc) => Product.fromFirestore(doc)).toList();
 
+    // Randomly select four products
+    List<Product> randomProducts = [];
+    if (allProducts.length > 0) {
+      var rng = Random();
+      for (var i = 0; i < 1; i++) {
+        int randomIndex = rng.nextInt(allProducts.length);
+        randomProducts.add(allProducts[randomIndex]);
+        allProducts.removeAt(randomIndex); // Ensure unique selection
+      }
+    }
+
+    EasyLoading.dismiss();
+    return randomProducts;
+  }
+
+  Future<List<Product>> getProducts({
+    String? orderBy,
+    bool descending = false,
+    String? category,
+  }) async {
+    Query productsQuery = _productsCollection;
+    EasyLoading.show();
+
+    // Apply sorting
+    if (orderBy != null) {
+      productsQuery = productsQuery.orderBy(orderBy, descending: descending);
+      EasyLoading.dismiss();
+    }
+
+    // Apply filtering by category
+    if (category != null) {
+      productsQuery = productsQuery.where('category', isEqualTo: category);
+      EasyLoading.dismiss();
+    }
+
+    QuerySnapshot snapshot = await productsQuery.get();
+    EasyLoading.dismiss();
     return snapshot.docs.map((doc) => Product.fromFirestore(doc)).toList();
   }
 
@@ -212,7 +257,13 @@ class ProductService {
   }
 
   bool _isValidCategory(String category) {
-    List<String> allowedCategories = ['feeding', 'bath', 'safety', 'diapers', 'toys'];
+    List<String> allowedCategories = [
+      'Feeding',
+      'Bath',
+      'Safety',
+      'Diapers',
+      'Toys'
+    ];
     return allowedCategories.contains(category);
   }
 
@@ -230,7 +281,7 @@ class ProductService {
           .get();
 
       if (snapshot.exists) {
-        return snapshot['name'].toString();
+        return snapshot['name'].toString().upperCamelCase;
       } else {
         return 'Unknown Seller';
       }

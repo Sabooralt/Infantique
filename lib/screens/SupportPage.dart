@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:infantique/controllers/userSupportController.dart';
+import 'package:infantique/screens/widgets/custom_app_bar.dart';
 
 class SupportScreen extends StatefulWidget {
   @override
@@ -21,12 +22,11 @@ class _SupportScreenState extends State<SupportScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text('Support Screen'),
+      appBar: Custom_Appbar(
+        title: 'Support',
       ),
       body: Column(
         children: [
-          // Row of buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
