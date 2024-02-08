@@ -128,8 +128,6 @@ class ProductService {
     }
   }
 
-// Import the math library for random number generation
-
   Future<List<Product>> getRandomProducts({
     String? orderBy,
     bool descending = false,
@@ -157,7 +155,7 @@ class ProductService {
     List<Product> randomProducts = [];
     if (allProducts.length > 0) {
       var rng = Random();
-      for (var i = 0; i < 1; i++) {
+      for (var i = 0; i < 6; i++) {
         int randomIndex = rng.nextInt(allProducts.length);
         randomProducts.add(allProducts[randomIndex]);
         allProducts.removeAt(randomIndex); // Ensure unique selection
@@ -212,8 +210,8 @@ class ProductService {
         'image': product.images,
         'price': product.price,
         'category': product.category,
-        'sellerId': sellerId, // Include the seller ID
-
+        'sellerId': sellerId,
+        'averageRating': 0.0
       });
     } else {
       throw Exception('Invalid category selected');
@@ -260,9 +258,11 @@ class ProductService {
     List<String> allowedCategories = [
       'Feeding',
       'Bath',
+      'Clothing',
       'Safety',
       'Diapers',
-      'Toys'
+      'Toys',
+      'Carry Nests'
     ];
     return allowedCategories.contains(category);
   }

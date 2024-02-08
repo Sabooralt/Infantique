@@ -34,37 +34,47 @@ class _SellerAuthPageState extends State<SellerAuthPage> {
     });
   }
 
-  Future<void> _submitForm() async {
+  void _submitForm() async {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+    String name = _nameController.text;
+
     try {
-      User user = await _authController.signIn(
-        _emailController.text.trim(),
-        _passwordController.text,
-      );
+      if (_isSignIn) {
+        // Sign In
+        User user = await _authController.signIn(
+          _emailController.text.trim(),
+          _passwordController.text,
+        );
 
-      // Create a Seller object or fetch additional seller information
-
-
-      // After successful sign-in or sign-up, navigate to the SellerPanel
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => SellerPanel(user: user)),
-      );
-
-      // Show success message in a snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Sign In successful!'),
-          backgroundColor: Colors.green,
-        ),
-      );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => SellerPanel(user: user)),
+        );
+        // Sign in successful, navigate to the next screen or perform any other actions
+      } else {
+        // Sign Up
+        await _authController.signUp(email, password, name: name);
+        // Sign up successful, navigate to the next screen or perform any other actions
+      }
     } catch (e) {
-      // Handle errors, show a snackbar, etc.
-      print('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-          backgroundColor: Colors.red,
-        ),
+      // Handle authentication errors
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Error'),
+            content: Text('$e'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('OK'),
+              ),
+            ],
+          );
+        },
       );
     }
   }

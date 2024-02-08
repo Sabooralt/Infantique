@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:infantique/constants.dart';
+import 'package:infantique/controllers/PriceSeparator.dart';
 import 'package:infantique/models/RatingManager.dart';
-import 'package:ionicons/ionicons.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/screens/product_screen.dart';
-import 'package:velocity_x/velocity_x.dart';
+import 'package:ionicons/ionicons.dart';
 
 class ProductCard extends StatefulWidget {
   final Product product;
@@ -49,6 +48,7 @@ class _ProductCardState extends State<ProductCard> {
     return SizedBox(
         height: double.infinity,
         child: Card(
+            color: Colors.white,
             child: InkWell(
                 onTap: () {
                   Navigator.of(context).push(
@@ -62,9 +62,8 @@ class _ProductCardState extends State<ProductCard> {
                   child: Container(
                     height: 290,
                     decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(20)),
-                    margin: EdgeInsets.all(5),
-                    padding: EdgeInsets.all(5),
+                        BoxDecoration(borderRadius: BorderRadius.circular(20)),
+                    padding: EdgeInsets.all(10),
                     child: Stack(
                       children: [
                         Column(
@@ -77,10 +76,11 @@ class _ProductCardState extends State<ProductCard> {
                                     : '',
                               ),
                             ),
-const SizedBox(height: 7,),
+                            const SizedBox(
+                              height: 7,
+                            ),
                             Row(
                               children: [
-
                                 Expanded(
                                   child: Text(
                                     widget.product.title,
@@ -93,11 +93,16 @@ const SizedBox(height: 7,),
                                 ),
                               ],
                             ),
-                            SizedBox(height: 5,),
+                            SizedBox(
+                              height: 5,
+                            ),
                             Row(
                               children: [
-
-                                Icon(Ionicons.star, color: Colors.amberAccent, size: 15,),
+                                Icon(
+                                  Ionicons.star,
+                                  color: Colors.amberAccent,
+                                  size: 15,
+                                ),
                                 const SizedBox(width: 3),
                                 Text(
                                   '${widget.product.averageRating}/5($totalReviews)',
@@ -107,12 +112,14 @@ const SizedBox(height: 7,),
                                 )
                               ],
                             ),
-                            const SizedBox(height: 7,),
+                            const SizedBox(
+                              height: 7,
+                            ),
                             Row(
                               children: [
-                                Text(
-                                  'Rs. ${widget.product.price}',
-                                  style: TextStyle(
+                                PriceSeparator(
+                                  price: widget.product.price,
+                                  textStyle: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                       color: kprimaryColor),

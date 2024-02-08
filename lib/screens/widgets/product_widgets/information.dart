@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:infantique/constants.dart';
+import 'package:infantique/controllers/PriceSeparator.dart';
 import 'package:infantique/models/RatingManager.dart';
 import 'package:infantique/models/product.dart';
 import 'package:ionicons/ionicons.dart';
@@ -54,7 +55,7 @@ class _ProductInfoState extends State<ProductInfo> {
         Text(
           widget.product.title,
           style: const TextStyle(
-            fontSize: 22,
+            fontSize: 17,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -66,14 +67,14 @@ class _ProductInfoState extends State<ProductInfo> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    "Rs. ${widget.product.price}",
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  PriceSeparator(
+                    price: widget.product.price,
+                    textStyle: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w900,
+                        color: kprimaryColor),
                   ),
-                  const SizedBox(height: 5),
+                  const SizedBox(height: 8),
                   Column(
                     children: [
                       Container(
@@ -81,6 +82,7 @@ class _ProductInfoState extends State<ProductInfo> {
                           color: kprimaryColor,
                           borderRadius: BorderRadius.circular(15),
                         ),
+                        width: 80,
                         alignment: Alignment.center,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 5,
@@ -108,8 +110,9 @@ class _ProductInfoState extends State<ProductInfo> {
                       ),
                     ],
                   ),
-                   SizedBox(height: 10),
-                  Text('Total Reviews: $totalReviews', style: const TextStyle(fontSize: 14)),
+                  SizedBox(height: 8),
+                  Text('Total Reviews: $totalReviews',
+                      style: const TextStyle(fontSize: 14)),
                 ],
               ),
             ),

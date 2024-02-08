@@ -3,17 +3,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:infantique/models/cart_provider.dart';
-import 'package:infantique/models/userDetails.dart';
-import 'package:infantique/screens/widgets/SupportFloatingActionButton.dart';
-import 'package:infantique/screens/widgets/product_widgets/appbar.dart';
-import 'package:infantique/screens/widgets/product_widgets/information.dart';
-import 'package:infantique/screens/widgets/product_widgets/product_desc.dart';
-import 'package:infantique/screens/widgets/product_widgets/category_details.dart';
-import 'package:infantique/screens/widgets/reviewForm.dart';
-
-import 'package:infantique/widgets/product_widgets/image_slider.dart';
 import 'package:infantique/models/product.dart';
 import 'package:infantique/models/reviews.dart';
+import 'package:infantique/models/userDetails.dart';
+import 'package:infantique/screens/widgets/SupportFloatingActionButton.dart';
+import 'package:infantique/screens/widgets/custom_app_bar.dart';
+import 'package:infantique/screens/widgets/product_widgets/category_details.dart';
+import 'package:infantique/screens/widgets/product_widgets/information.dart';
+import 'package:infantique/screens/widgets/product_widgets/product_desc.dart';
+import 'package:infantique/screens/widgets/reviewForm.dart';
+import 'package:infantique/widgets/product_widgets/image_slider.dart';
 import 'package:ionicons/ionicons.dart';
 import 'package:provider/provider.dart';
 import 'package:velocity_x/velocity_x.dart';
@@ -127,13 +126,17 @@ class _ProductScreenState extends State<ProductScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: Custom_Appbar(
+        title: widget.product.title,
+      ),
       persistentFooterButtons: [
         Row(
           children: [
             Expanded(
               child: ElevatedButton(
                 onPressed: () {
-                  CartProvider cartProvider = Provider.of<CartProvider>(context, listen: false);
+                  CartProvider cartProvider =
+                      Provider.of<CartProvider>(context, listen: false);
                   cartProvider.addToCart(widget.product, 1);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -150,10 +153,10 @@ class _ProductScreenState extends State<ProductScreen> {
                   ),
                 ),
                 child: const Text('Add to Cart',
-    style: TextStyle(
-    color: Colors.white,
-    fontWeight: FontWeight.bold,
-    ),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
 
                 ),
               ),
@@ -192,7 +195,6 @@ class _ProductScreenState extends State<ProductScreen> {
       body: SafeArea(
         child: ListView(
           children: [
-            const ProductAppBar(),
             ImageSlider(
               onChange: (index) {
                 setState(() {
@@ -202,29 +204,6 @@ class _ProductScreenState extends State<ProductScreen> {
               currentImage: currentImage,
               images: widget.product.images,
             ),
-             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(
-                5,
-                    (index) => AnimatedContainer(
-                  duration:  const Duration(milliseconds: 300),
-                  width: currentImage == index ? 15 : 8,
-                  height: 8,
-                  margin:  const EdgeInsets.only(right: 2),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Colors.black,
-                    ),
-                    color: currentImage == index
-                        ? Colors.black
-                        : Colors.transparent,
-                  ),
-                ),
-              ),
-            ),
-             const SizedBox(height: 20),
             Container(
               width: double.infinity,
               decoration:  const BoxDecoration(
@@ -244,15 +223,15 @@ class _ProductScreenState extends State<ProductScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   ProductInfo(product: widget.product),
-                   const SizedBox(height: 20),
-                   const Text(
+                  const SizedBox(height: 20),
+                  const Text(
                     "Color",
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                   const SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   Row(
                     children: List.generate(
                       staticColors.length,
@@ -289,16 +268,24 @@ class _ProductScreenState extends State<ProductScreen> {
                       ),
                     ),
                   ),
-                   const SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ProductCat(categoryName: widget.product.category),
-                   const SizedBox(height: 10),
+                  const SizedBox(height: 10),
                   ProductDescription(text: widget.product.description),
 
-                   const SizedBox(height: 40,),
+                  const SizedBox(height: 40,),
                   // Ratings & Reviews Section
                   Container(
                     padding: const EdgeInsets.all(15),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                       color: Colors.white,
                     ),
                     child: Column(
@@ -375,24 +362,24 @@ class _ProductScreenState extends State<ProductScreen> {
                                 borderRadius: BorderRadius.circular(5.0),
                               ),
                             ),
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.add,
+                            child: const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.add,
                                   color: Colors.white,
 
-                                  ), // Add your desired icon
-                                  SizedBox(width: 8), // Adjust the spacing between the icon and text
-                                  Text('Add a Review',
+                                ), // Add your desired icon
+                                SizedBox(width: 8), // Adjust the spacing between the icon and text
+                                Text('Add a Review',
 
                                   style:
-                                    TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                  TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                ],
-                              ),
+                                ),
+                              ],
+                            ),
 
                           ),
                         ),
@@ -405,9 +392,19 @@ class _ProductScreenState extends State<ProductScreen> {
                   Container(
                     padding: const EdgeInsets.all(16.0), // Adjust padding as needed
                     decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                       color: Colors.white,
-                      border: Border.all(color: Colors.grey), // Add a border for visual separation
-                      borderRadius: BorderRadius.circular(8.0), // Optional: Add border radius for rounded corners
+                      border: Border.all(color: Colors.grey),
+                      // Add a border for visual separation
+                      borderRadius: BorderRadius.circular(
+                          8.0), // Optional: Add border radius for rounded corners
                     ),
                     child: Column(
 
@@ -420,7 +417,7 @@ class _ProductScreenState extends State<ProductScreen> {
                             fontSize: 18.0,
                           ),
                         ),
-                         const SizedBox(height: 12.0),
+                        const SizedBox(height: 12.0),
                         _buildServiceOption("14 days free & easy return", Ionicons.checkmark_circle, Colors.green),
                         const SizedBox(height: 8.0), // Add vertical space between options
                         _buildServiceOption("Warranty not available", Ionicons.warning, Colors.black),
@@ -431,9 +428,20 @@ class _ProductScreenState extends State<ProductScreen> {
                   Container(
 
                     width: double.infinity,
-                    color: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 15, vertical: 20),
                     margin: const EdgeInsets.only(top: 10),
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                      color: Colors.white,
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [

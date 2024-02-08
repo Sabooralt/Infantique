@@ -22,6 +22,7 @@ class HomeSlider extends StatelessWidget {
             itemBuilder: (context, index) {
               List<String> imagePaths = [
                 "assets/main_slider.png",
+                "assets/babycloth1.jpg",
                 "assets/slider1.jpg",
                 "assets/slider2.jpg",
                 "assets/slider3.jpg",
